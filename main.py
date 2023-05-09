@@ -25,13 +25,18 @@ if __name__ == '__main__':
     print(rec1)
     world.add(rec1)
 
-    rec2 = DisplayableRectangle(500, 250, 200, 100, color=(255, 20, 147), batch=batch)
+    rec2 = DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch)
     # rec2.opacity = 128
     world.add(rec2)
 
     rec2 = DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch)
     # rec2.opacity = 128
     world.add(rec2)
+
+    # get dictionary of i,j indices that have objects
+    # the robot avoids those to avoid collisions
+    collisions_dic = world.get_collision_bounds_dictionary()
+    robot.set_collision_dic(collisions_dic)
 
     print(robot.sensor.shapely_shape.coords.xy)
     print(affinity.rotate(robot.sensor.shapely_shape, 90, origin=(robot.sensor.x, robot.sensor.y)))

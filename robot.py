@@ -5,7 +5,9 @@ import shapely
 from shapely import LineString as ShapelyLine, affinity
 from shapes import DisplayableIntersection, DisplayableLine, DisplayableRectangle
 
-from definitions import *
+from definitions import *\
+
+import math as m
 
 
 class Robot:
@@ -56,9 +58,12 @@ class Robot:
         self.sensor = DisplayableLine(x=x + TILE_SIZE / 2, y=y + TILE_SIZE / 2, x2=x + TILE_SIZE / 2, y2=y + TILE_SIZE / 2 + sensor_length, color=self.laser_color,
                                       batch=batch)
         self.body = DisplayableRectangle(x, y, TILE_SIZE, TILE_SIZE, color=(255, 18, 18), batch=batch)
-        self.body.opacity = 128
+        self.body.opacity = 200
         self.closest_sensed_obj = None
         self.mass_center = shapely.Point((x + TILE_SIZE / 2, y + TILE_SIZE / 2))
+
+    def set_collision_dic(self, dic):
+        self.collision_dic = dic
 
     def get_intersection(self, world):
 
@@ -108,8 +113,17 @@ class Robot:
         # print(line.coords.xy)
         return DisplayableLine(x + TILE_SIZE / 2, y + TILE_SIZE / 2, x2, y2, color=self.laser_color, batch=self.batch)
 
+    def get_ij_from_xy(self, xy: tuple):
+        return (m.floor(xy[0]/TILE_SIZE), m.floor(xy[1]/TILE_SIZE) )
+
     def deterministic_move(self, direction: Direction):
-        self.location = self.location + Robot.directions[direction.value] * TILE_SIZE
+        new_location = self.location + Robot.directions[direction.value] * TILE_SIZE
+
+        # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
+        if self.get_ij_from_xy(new_location) in self.collision_dic:
+            print("Would hit the wall, can't do this move.")
+            return 
+        self.location = new_location
         self.body.delete()
         self.body = DisplayableRectangle(self.location[0], self.location[1], TILE_SIZE, TILE_SIZE, color=self.color, batch=self.batch)
         self.body.opacity = 128
@@ -117,3 +131,4 @@ class Robot:
         self.sensor = self.get_sensor(direction)
 
         print(f'New position: {self.location + Robot.directions[direction.value] * TILE_SIZE}')
+
