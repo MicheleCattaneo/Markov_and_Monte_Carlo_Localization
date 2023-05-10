@@ -62,6 +62,9 @@ class Robot:
         self.closest_sensed_obj = None
         self.mass_center = shapely.Point((x + TILE_SIZE / 2, y + TILE_SIZE / 2))
 
+    def set_mass_center(self):
+        self.mass_center = shapely.Point((self.location[0] + TILE_SIZE / 2, self.location[1] + TILE_SIZE / 2))
+
     def set_collision_dic(self, dic):
         self.collision_dic = dic
 
@@ -129,6 +132,7 @@ class Robot:
         self.body.opacity = 128
         self.sensor.delete()
         self.sensor = self.get_sensor(direction)
+        self.set_mass_center()
 
         print(f'New position: {self.location + Robot.directions[direction.value] * TILE_SIZE}')
 
