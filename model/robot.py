@@ -3,27 +3,15 @@ from enum import Enum
 import numpy as np
 import shapely
 from shapely import LineString as ShapelyLine, affinity
-from shapes import DisplayableIntersection, DisplayableLine, DisplayableRectangle
+from base.shapes import DisplayableIntersection, DisplayableLine, DisplayableRectangle
 
 from definitions import *
+from base.robot import RobotBase
 
 
-class Robot:
-    class Direction(Enum):
-        '''
-        Mapping between a direction and an index
-        '''
-        UP = 0
-        UP_RIGHT = 1
-        RIGHT = 2
-        DOWN_RIGHT = 3
-        DOWN = 4
-        DOWN_LEFT = 5
-        LEFT = 6
-        UP_LEFT = 7
+class Robot(RobotBase):
 
-    # mapping between an index (from Direction) and a direction array to be added
-    # to the current position in order to perform a movement
+
     directions = [
         np.array([0, 1]),
         np.array([1, 1]),
@@ -47,32 +35,28 @@ class Robot:
     ]
 
     def __init__(self, world, x, y, batch, sensor_length=100) -> None:
-
-        self.location = np.array([x, y])
+        self.set_position(x//TILE_SIZE, y//TILE_SIZE)
         self.sensor_length = sensor_length
-        self.direction = 0  # look up by default
         self.mass_center = shapely.Point((x + TILE_SIZE / 2, y + TILE_SIZE / 2))
 
         # region GUI
 
-        self.laser_color = (124, 252, 0)
-        self.color = (255, 18, 18)
         self.batch = batch
+        self.laser_color = (124, 252, 0)
         self.sensor = DisplayableLine(x=x + TILE_SIZE / 2, y=y + TILE_SIZE / 2, x2=x + TILE_SIZE / 2, y2=y + TILE_SIZE / 2 + sensor_length, color=self.laser_color,
                                       batch=batch)
-        self.body = DisplayableRectangle(x, y, TILE_SIZE, TILE_SIZE, color=(255, 18, 18), batch=batch)
-        self.body.opacity = 200
+
         self.closest_sensed_obj = None
 
         # endregion
 
         self.world = world
         self.collision_dict = world.collision_dict
-        self.true_measurements = self.precompute_measurements(world.height, world.width, world.tile_size)
+        # self.true_measurements = self.precompute_measurements(world.height, world.width, world.tile_size)
 
-        self.believe = np.ones_like(self.true_measurements)
-        self.believe[~self.world.walkable] = 0
-        self.believe /= self.believe.sum()
+        # self.believe = np.ones_like(self.true_measurements)
+        # self.believe[~self.world.walkable] = 0
+        # self.believe /= self.believe.sum()
 
         print()
 
@@ -98,24 +82,15 @@ class Robot:
     def see(self):
         pass
 
-    def act(self, direction: Direction):
+    def act(self, direction: RobotBase.Direction):
         direction = self.directions[direction.value]
-
-
-    # endregion
-
-    # region GUI
-
-    def remove_gui(self):
-        self.sensor.delete()
-        self.body.delete()
 
     # endregion
 
     # region Move and Sense
 
     def set_mass_center(self):
-        self.mass_center = shapely.Point((self.location[0] + TILE_SIZE / 2, self.location[1] + TILE_SIZE / 2))
+        self.mass_center = shapely.Point((self.position[0] + TILE_SIZE / 2, self.position[1] + TILE_SIZE / 2))
 
     def get_intersection(self, world):
 
@@ -154,12 +129,11 @@ class Robot:
     def print_sensor_loc(self):
         print("Sensor loc: ", self.sensor.shapely_shape.coords.xy)
 
-    def get_sensor(self, direction: Direction):
-        x = self.location[0]
-        y = self.location[1]
+    def get_sensor(self, direction: RobotBase.Direction):
+        x, y = self.position * TILE_SIZE
         return self.get_sensor_given_xy(x, y, direction)
 
-    def get_sensor_given_xy(self, x, y, direction: Direction):
+    def get_sensor_given_xy(self, x, y, direction: RobotBase.Direction):
         line = ShapelyLine(
             [[x + TILE_SIZE / 2, y + TILE_SIZE / 2], [x + TILE_SIZE / 2, y + TILE_SIZE / 2 + self.sensor_length]])
         angle = Robot.rotations[direction.value]
@@ -171,24 +145,32 @@ class Robot:
         # print(line.coords.xy)
         return DisplayableLine(x + TILE_SIZE / 2, y + TILE_SIZE / 2, x2, y2, color=self.laser_color, batch=self.batch)
 
-    def get_ij_from_xy(self, xy: tuple):
-        return xy[0] // TILE_SIZE, xy[1] // TILE_SIZE
+    def move(self, action: RobotBase.Action):
+        print(action)
+        if action == action.TURN_LEFT:
+            self.orientation = self.Direction((self.orientation.value - 1) % len(self.Direction))
+        elif action == action.TURN_RIGHT:
+            self.orientation = self.Direction((self.orientation.value + 1) % len(self.Direction))
+        else:
+            move_dir = self.orientation.value \
+                if action == action.FORWARD \
+                else (self.orientation.value + 4) % len(self.Direction)
 
-    def deterministic_move(self, direction: Direction):
-        new_location = self.location + Robot.directions[direction.value] * TILE_SIZE
+            new_pos = self.position + Robot.directions[move_dir]
 
-        # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
-        if self.get_ij_from_xy(new_location) in self.collision_dict:
-            print("Would hit the wall, can't do this move.")
-            return 
-        self.location = new_location
-        self.body.delete()
-        self.body = DisplayableRectangle(self.location[0], self.location[1], TILE_SIZE, TILE_SIZE, color=self.color, batch=self.batch)
-        self.body.opacity = 128
+            # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
+            if not self.world.walkable[tuple(new_pos.astype(int))]:
+                print("Would hit the wall, can't do this move.")
+                return
+
+            self.set_position(new_pos)
+
         self.sensor.delete()
-        self.sensor = self.get_sensor(direction)
+        self.sensor = self.get_sensor(self.orientation)
         self.set_mass_center()
 
-        print(f'New position: {self.location + Robot.directions[direction.value] * TILE_SIZE}')
+        self.on_move.notify()
+
+        # print(f'New position: {self.location + Robot.directions[direction.value] * TILE_SIZE}')
 
     # endregion

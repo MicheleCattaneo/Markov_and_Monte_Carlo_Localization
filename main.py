@@ -9,12 +9,11 @@ import sys
 
 from shapely import affinity
 
-from environment import GridWorld
-from robot import Robot
+from model.environment import GridWorld
+from model.robot import Robot
 from pyglet.window import key
 
-
-COMMAND_TYPE = 'AUTO'
+from view.robot import RobotView
 
 
 def update(dt):
@@ -22,31 +21,23 @@ def update(dt):
 
     if COMMAND_TYPE == 'KEYBOARD':
         if keys[key.UP]:
-            robot.deterministic_move(Robot.Direction.UP)
+            robot.move(Robot.Action.FORWARD)
         elif keys[key.DOWN]:
-            robot.deterministic_move(Robot.Direction.DOWN)
+            robot.move(Robot.Action.BACKWARD)
         elif keys[key.LEFT]:
-            robot.deterministic_move(Robot.Direction.LEFT)
+            robot.move(Robot.Action.TURN_LEFT)
         elif keys[key.RIGHT]:
-            robot.deterministic_move(Robot.Direction.RIGHT)
+            robot.move(Robot.Action.TURN_RIGHT)
         robot.get_intersection(world)
     else:
         r = np.random.random()
 
-        if r > 0.5:
-            robot.deterministic_move(Robot.Direction.DOWN_LEFT)
-        else:
-            robot.deterministic_move(Robot.Direction.DOWN_RIGHT)
+        robot.move(Robot.Action(int(r*4)))
 
         robot.get_intersection(world)
 
 
 if __name__ == '__main__':
-
-    if len(sys.argv) == 2:
-        arg = sys.argv[1]
-        if arg == 'keyboard':
-            COMMAND_TYPE = 'KEYBOARD'
 
     window = Window(height=RES_HEIGHT, width=RES_WIDTH)
     env_batch = pyglet.graphics.Batch()
@@ -57,6 +48,7 @@ if __name__ == '__main__':
 
     world = GridWorld((RES_HEIGHT, RES_WIDTH), TILE_SIZE, SENSOR_LENGTH, env_batch)
     robot = Robot(world, 500, 500, rob_batch, sensor_length=SENSOR_LENGTH)
+    robot_view = RobotView(robot, rob_batch)
 
     dd = True
 

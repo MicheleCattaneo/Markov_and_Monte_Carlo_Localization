@@ -1,7 +1,7 @@
 import numpy as np
 from shapely.geometry import Polygon as ShapelyPolygon
 
-from shapes import DisplayableRectangle
+from base.shapes import DisplayableRectangle
 
 
 class GridWorld:
