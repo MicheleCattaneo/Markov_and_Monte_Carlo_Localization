@@ -1,29 +1,6 @@
+RES_WIDTH = 800
+RES_HEIGHT = 720
 TILE_SIZE = 10
+SENSOR_LENGTH = 200
 
-import pyglet
-from pyglet.window import Window
-
-from environment import GridWorld
-from robot import Robot
-from pyglet.window import key
-
-key_to_direction_mapping = {
-    key.LEFT : 2,
-    key.RIGHT : 3,
-    key.UP : 0,
-    key.DOWN : 1
-}
-
-
-
-window = Window(width=720, height=720)
-batch = pyglet.graphics.Batch()
-
-keys = key.KeyStateHandler()
-window.push_handlers(keys)
-
-robot = Robot(500, 500, batch, sensor_length=200)
-
-world = GridWorld(720, TILE_SIZE)
-
-dd = True
+assert RES_HEIGHT % TILE_SIZE == 0 and RES_WIDTH % TILE_SIZE == 0, "Width and height should be a multiple of TILE_SIZE"

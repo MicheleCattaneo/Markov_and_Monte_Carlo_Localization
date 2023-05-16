@@ -1,19 +1,24 @@
+from definitions import *
+
 import numpy as np
+import pyglet
 from pyglet import app
+from pyglet.window import Window
 
 import sys
 
 from shapely import affinity
 
-from shapes import DisplayableRectangle
-from definitions import *
+from environment import GridWorld
+from robot import Robot
+from pyglet.window import key
+
 
 COMMAND_TYPE = 'AUTO'
 
+
 def update(dt):
     print(f'Dt={dt}')
-    r = np.random.random()
-
 
     if COMMAND_TYPE == 'KEYBOARD':
         if keys[key.UP]:
@@ -35,6 +40,7 @@ def update(dt):
 
         robot.get_intersection(world)
 
+
 if __name__ == '__main__':
 
     if len(sys.argv) == 2:
@@ -42,27 +48,17 @@ if __name__ == '__main__':
         if arg == 'keyboard':
             COMMAND_TYPE = 'KEYBOARD'
 
-    rec1 = DisplayableRectangle(300, 250, 100, 200, color=(255, 20, 147), batch=batch)
-    # rec1.opacity = 128
-    print(rec1)
-    world.add(rec1)
+    window = Window(height=RES_HEIGHT, width=RES_WIDTH)
+    env_batch = pyglet.graphics.Batch()
+    rob_batch = pyglet.graphics.Batch()
 
-    rec2 = DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch)
-    # rec2.opacity = 128
-    world.add(rec2)
+    keys = key.KeyStateHandler()
+    window.push_handlers(keys)
 
-    rec3 = DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch)
-    # rec2.opacity = 128
-    world.add(rec3)
+    world = GridWorld((RES_HEIGHT, RES_WIDTH), TILE_SIZE, SENSOR_LENGTH, env_batch)
+    robot = Robot(world, 500, 500, rob_batch, sensor_length=SENSOR_LENGTH)
 
-    rec4 = DisplayableRectangle(300, 500, 200, 100, color=(255, 20, 147), batch=batch)
-    # rec2.opacity = 128
-    world.add(rec4)
-
-    # get dictionary of i,j indices that have objects
-    # the robot avoids those to avoid collisions
-    collisions_dic = world.get_collision_bounds_dictionary()
-    robot.set_collision_dic(collisions_dic)
+    dd = True
 
     print(robot.sensor.shapely_shape.coords.xy)
     print(affinity.rotate(robot.sensor.shapely_shape, 90, origin=(robot.sensor.x, robot.sensor.y)))
@@ -71,7 +67,8 @@ if __name__ == '__main__':
     @window.event
     def on_draw():
         window.clear()
-        batch.draw()
+        env_batch.draw()
+        rob_batch.draw()
 
 
     pyglet.clock.schedule_interval(update, 0.1)
