@@ -145,7 +145,7 @@ class Robot(RobotBase):
     # region Move
 
     def set_mass_center(self):
-        self.mass_center = shapely.Point((self.position[0] + TILE_SIZE / 2, self.position[1] + TILE_SIZE / 2))
+        self.mass_center = shapely.Point((self.position[0]*TILE_SIZE + TILE_SIZE / 2, self.position[1]*TILE_SIZE + TILE_SIZE / 2))
 
     def move(self, action: RobotBase.Action):
         if action == action.TURN_LEFT:
