@@ -21,14 +21,13 @@ class GridWorld:
             DisplayableRectangle(10, 10, 20, 20, color=(255, 20, 147), batch=batch)
         ]
 
-        self.collision_dict, self.walkable = self._get_collision_bounds_dictionary()
+        self.walkable = self._compute_walkable_areas()
 
-    def _get_collision_bounds_dictionary(self):
+    def _compute_walkable_areas(self):
         '''
         Returns a dictionary containing a pair (i,j) when the corresponding tile
         as indices i,j contains an object. The robot can not go on those tiles.
         '''
-        dic = {}
         width = self.tile_size - 2
         walkable = np.ones((self.height, self.width), dtype=bool)
         for x in range(0, self.resolution[0], self.tile_size):
@@ -44,10 +43,9 @@ class GridWorld:
                 # intersect or be contained by the object
                 for o in self.objects:
                     if o.shapely_shape.contains(robot_body) or o.shapely_shape.intersects(robot_body):
-                        dic[(x//self.tile_size, y//self.tile_size)] = True
                         walkable[x//self.tile_size, y//self.tile_size] = False
                         break
 
-        return dic, walkable
+        return walkable
 
 

@@ -13,6 +13,7 @@ from model.environment import GridWorld
 from model.robot import Robot
 from pyglet.window import key
 
+from model.sensor import LaserSensor
 from view.robot import RobotView
 
 
@@ -28,13 +29,11 @@ def update(dt):
             robot.move(Robot.Action.TURN_LEFT)
         elif keys[key.RIGHT]:
             robot.move(Robot.Action.TURN_RIGHT)
-        robot.get_intersection(world)
     else:
         r = np.random.random()
 
         robot.move(Robot.Action(int(r*4)))
 
-        robot.get_intersection(world)
 
 
 if __name__ == '__main__':
@@ -47,14 +46,12 @@ if __name__ == '__main__':
     window.push_handlers(keys)
 
     world = GridWorld((RES_HEIGHT, RES_WIDTH), TILE_SIZE, SENSOR_LENGTH, env_batch)
-    robot = Robot(world, 500//TILE_SIZE, 500//TILE_SIZE, rob_batch, sensor_length=SENSOR_LENGTH)
+
+    sensor = LaserSensor(500+TILE_SIZE*ROBOT_SIZE, 500+TILE_SIZE*ROBOT_SIZE, world, SENSOR_LENGTH, rob_batch)
+    robot = Robot(world, 500//TILE_SIZE, 500//TILE_SIZE, sensor)
     robot_view = RobotView(robot, rob_batch)
 
     dd = True
-
-    print(robot.sensor.shapely_shape.coords.xy)
-    print(affinity.rotate(robot.sensor.shapely_shape, 90, origin=(robot.sensor.x, robot.sensor.y)))
-
 
     @window.event
     def on_draw():

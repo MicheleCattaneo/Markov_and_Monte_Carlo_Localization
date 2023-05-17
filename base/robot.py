@@ -1,6 +1,6 @@
 import abc
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 
 import numpy as np
 
@@ -41,6 +41,11 @@ class RobotBase(abc.ABC):
     @abc.abstractmethod
     def move(self, action: Action):
         pass
+
+    @property
+    def state(self) -> Tuple[int, int, int]:
+        x, y = self.position.astype(int)
+        return x, y, self.orientation.value
 
     def set_position(self, x: Union[float, np.ndarray], y: Optional[float] = None) -> None:
         if isinstance(x, np.ndarray):
