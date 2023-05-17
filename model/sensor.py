@@ -39,7 +39,7 @@ class LaserSensor(SensorBase):
 
     def sense(self, xy: np.ndarray, direction: RobotBase.Direction, raw: bool = False) -> np.ndarray:
         self.laser_beam_obj.delete()
-        gx, gy = xy * TILE_SIZE
+        gy, gx = xy * TILE_SIZE
 
         mass_center = shapely.Point((gx, gy))
         self.laser_beam_obj = self.create_laser_beam_object(gx, gy, direction)

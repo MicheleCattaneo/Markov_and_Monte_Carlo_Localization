@@ -14,11 +14,11 @@ class GridWorld:
         self.sensor_range = sensor_range
 
         self.objects = [
-            DisplayableRectangle(300, 250, 100, 200, color=(255, 20, 147), batch=batch),
-            DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch),
-            DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch),
-            DisplayableRectangle(300, 500, 200, 100, color=(255, 20, 147), batch=batch),
-            DisplayableRectangle(10, 10, 20, 20, color=(255, 20, 147), batch=batch)
+            # DisplayableRectangle(300, 250, 100, 200, color=(255, 20, 147), batch=batch),
+            # DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch),
+            # DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch),
+            # DisplayableRectangle(300, 500, 200, 100, color=(255, 20, 147), batch=batch),
+            DisplayableRectangle(10, 70, 20, 20, color=(255, 20, 147), batch=batch)
         ]
 
         self.walkable = self._compute_walkable_areas()

@@ -1,8 +1,12 @@
 import numpy as np
 
 from base.sensor import SensorBase
+from base.movement_models import InvalidActionException, MovementModelBase
 from definitions import *
 from base.robot import RobotBase
+from scipy.signal import convolve2d
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 class Robot(RobotBase):
@@ -18,16 +22,33 @@ class Robot(RobotBase):
         np.array([-1, 1])
     ]
 
-    def __init__(self, world, x, y, sensor: SensorBase) -> None:
+    def __init__(self, world, x, y, movement_model: MovementModelBase ,sensor: SensorBase) -> None:
         self.set_position(x, y)
         self.sensor = sensor
 
         self.world = world
         self.true_measurements = self.precompute_measurements(world.height, world.width)
 
-        self.believe = np.ones_like(self.true_measurements)
-        self.believe[~self.world.walkable] = 0
-        self.believe /= self.believe.sum()
+        self.belief = np.ones_like(self.true_measurements)
+        self.belief[~self.world.walkable] = 0
+        self.belief /= self.belief.sum()
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.heatmap(self.world.walkable, ax=ax, linewidths=0.1)
+        # ax.invert_yaxis()
+        fig.savefig('./plots/walkable_belief_up.png')
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.heatmap(self.belief[:,:,0], ax=ax, linewidths=0.1)
+        # ax.invert_yaxis()
+        fig.savefig('./plots/first_belief_up.png')
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.heatmap(np.nan_to_num(self.true_measurements.max(axis=2), posinf=-1), ax=ax, linewidths=0.1)
+        # ax.invert_yaxis()
+        fig.savefig('./plots/true_measurements.png')
+
+        self.movement_model = movement_model
 
         print()
 
@@ -56,14 +77,20 @@ class Robot(RobotBase):
     def measurement_probability_uncertain(self, measurement: float, location: tuple) -> float:
         pass
 
-    def see(self):
-        dummy_measurement = 1.0
-        self.believe = self.measurement_probability(dummy_measurement) * self.believe
+    def see(self, measurement):
+        self.belief = self.measurement_probability(measurement) * self.belief
+        print(self.belief.sum(), 'sum belief')
+        self.belief = self.belief / self.belief.sum()
 
-        # todo normalize
+        # assert np.isclose(self.belief.sum(), 1.), f'sum is not 1 {self.belief.sum()}'
 
-    def act(self, direction: RobotBase.Direction):
-        direction = self.directions[direction.value]
+    def act(self, action: RobotBase.Action):
+        try:
+            filter = self.movement_model.get_filter(action)
+            for i in range(filter.shape[-1]):
+                self.belief[:,:,i] = convolve2d(self.belief[:,:,i], filter[:,:,i], mode='same')
+        except InvalidActionException:
+            pass
 
     # endregion
 
@@ -82,15 +109,23 @@ class Robot(RobotBase):
             new_pos = self.position + Robot.directions[move_dir]
 
             # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
-            if not self.world.walkable[tuple(new_pos.astype(int))]:
-                print("Would hit the wall, can't do this move.")
-                return
+            if self.world.walkable[tuple(new_pos.astype(int))]:
+                self.set_position(new_pos)
 
-            self.set_position(new_pos)
-            print(f'New position: {self.position * TILE_SIZE}')
+
+            print(f'Current position: {self.position * TILE_SIZE}')
 
         reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
+        print(reading, 'reading')
         assert reading == self.true_measurements[self.state], "True measurements are incorrect"
+
+        self.act(action)
+        self.see(reading)
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.heatmap(self.belief[:,:,0], ax=ax, linewidths=0.1)
+        ax.invert_yaxis()
+        fig.savefig('./plots/prob_belief_up.png')
 
         self.on_move.notify()
 

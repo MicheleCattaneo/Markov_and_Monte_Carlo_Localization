@@ -16,9 +16,11 @@ from pyglet.window import key
 from model.sensor import LaserSensor
 from view.robot import RobotView
 
+from model.movement_model import DiscreteMovementModel
+
 
 def update(dt):
-    print(f'Dt={dt}')
+    print(f'Dt={dt}', np.argwhere(robot.belief == robot.belief.max()), "max prob position")
 
     if COMMAND_TYPE == 'KEYBOARD':
         if keys[key.UP]:
@@ -45,10 +47,10 @@ if __name__ == '__main__':
     keys = key.KeyStateHandler()
     window.push_handlers(keys)
 
-    world = GridWorld((RES_HEIGHT, RES_WIDTH), TILE_SIZE, SENSOR_LENGTH, env_batch)
+    world = GridWorld((RES_WIDTH, RES_HEIGHT), TILE_SIZE, SENSOR_LENGTH, env_batch)
 
-    sensor = LaserSensor(500+TILE_SIZE*ROBOT_SIZE, 500+TILE_SIZE*ROBOT_SIZE, world, SENSOR_LENGTH, rob_batch)
-    robot = Robot(world, 500//TILE_SIZE, 500//TILE_SIZE, sensor)
+    sensor = LaserSensor(20+TILE_SIZE*ROBOT_SIZE, 10+TILE_SIZE*ROBOT_SIZE, world, SENSOR_LENGTH, rob_batch)
+    robot = Robot(world, 20//TILE_SIZE, 10//TILE_SIZE, DiscreteMovementModel(), sensor)
     robot_view = RobotView(robot, rob_batch)
 
     @window.event
