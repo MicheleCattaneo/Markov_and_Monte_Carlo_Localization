@@ -1,3 +1,8 @@
+"""
+Base code was taken from https://refactoring.guru/design-patterns/observer/python/example
+Some adaptions were made to fit our purposes.
+"""
+
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List
