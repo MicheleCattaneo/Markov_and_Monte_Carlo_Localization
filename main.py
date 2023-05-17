@@ -51,8 +51,6 @@ if __name__ == '__main__':
     robot = Robot(world, 500//TILE_SIZE, 500//TILE_SIZE, sensor)
     robot_view = RobotView(robot, rob_batch)
 
-    dd = True
-
     @window.event
     def on_draw():
         window.clear()

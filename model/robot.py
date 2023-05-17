@@ -45,9 +45,22 @@ class Robot(RobotBase):
                     means[i, j, d] = self.sensor.sense(np.array([i, j]) + ROBOT_SIZE, self.Direction(d))
 
         return means
+    
+    def measurement_probability(self, measurement: float) -> float:
+        '''
+        Given a measurement, returns the probability 
+        of being at a position and measuring the given measurement.
+        '''
+        return np.isclose(self.true_measurements, measurement).astype('int')
+    
+    def measurement_probability_uncertain(self, measurement: float, location: tuple) -> float:
+        pass
 
     def see(self):
-        pass
+        dummy_measurement = 1.0
+        self.believe = self.measurement_probability(dummy_measurement) * self.believe
+
+        # todo normalize
 
     def act(self, direction: RobotBase.Direction):
         direction = self.directions[direction.value]
