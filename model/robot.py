@@ -34,15 +34,15 @@ class Robot(RobotBase):
     ]
 
     def __init__(self, world, x, y, batch, sensor_length=100) -> None:
-        self.set_position(x//TILE_SIZE, y//TILE_SIZE)
+        self.set_position(x, y)
         self.sensor_length = sensor_length
-        self.mass_center = shapely.Point((x + TILE_SIZE / 2, y + TILE_SIZE / 2))
+        self.mass_center = shapely.Point((x + ROBOT_SIZE / 2, y + ROBOT_SIZE / 2))
 
         # region Sensor
 
         self.batch = batch
         self.laser_color = (124, 252, 0)
-        self.sensor = DisplayableLine(x=x + TILE_SIZE / 2, y=y + TILE_SIZE / 2, x2=x + TILE_SIZE / 2, y2=y + TILE_SIZE / 2 + sensor_length, color=self.laser_color,
+        self.sensor = DisplayableLine(x=x + ROBOT_SIZE / 2, y=y + ROBOT_SIZE / 2, x2=x + ROBOT_SIZE / 2, y2=y + ROBOT_SIZE / 2 + sensor_length, color=self.laser_color,
                                       batch=batch)
 
         self.closest_sensed_obj = None
@@ -119,33 +119,33 @@ class Robot(RobotBase):
         if closest_obj:
             # Add new DisplayableIntersection
             self.closest_sensed_obj = DisplayableIntersection(closest_obj.x, closest_obj.y,
-                                                              TILE_SIZE, 3, TILE_SIZE, color=(255, 255, 0), batch=self.batch)
+                                                              ROBOT_SIZE, 3, ROBOT_SIZE, color=(255, 255, 0), batch=self.batch)
         return closest_obj
 
     def print_sensor_loc(self):
         print("Sensor loc: ", self.sensor.shapely_shape.coords.xy)
 
     def get_sensor(self, direction: RobotBase.Direction):
-        x, y = self.position * TILE_SIZE
+        x, y = self.position * ROBOT_SIZE
         return self.get_sensor_given_xy(x, y, direction)
 
     def get_sensor_given_xy(self, x, y, direction: RobotBase.Direction):
         line = ShapelyLine(
-            [[x + TILE_SIZE / 2, y + TILE_SIZE / 2], [x + TILE_SIZE / 2, y + TILE_SIZE / 2 + self.sensor_length]])
+            [[x + ROBOT_SIZE / 2, y + ROBOT_SIZE / 2], [x + ROBOT_SIZE / 2, y + ROBOT_SIZE / 2 + self.sensor_length]])
         angle = Robot.rotations[direction.value]
         # get rotated sensor
-        line = affinity.rotate(line, angle, origin=(x + TILE_SIZE / 2, y + TILE_SIZE / 2))
+        line = affinity.rotate(line, angle, origin=(x + ROBOT_SIZE / 2, y + ROBOT_SIZE / 2))
 
         x2 = line.coords.xy[0][1]
         y2 = line.coords.xy[1][1]
-        return DisplayableLine(x + TILE_SIZE / 2, y + TILE_SIZE / 2, x2, y2, color=self.laser_color, batch=self.batch)
+        return DisplayableLine(x + ROBOT_SIZE / 2, y + ROBOT_SIZE / 2, x2, y2, color=self.laser_color, batch=self.batch)
 
     # endregion
 
     # region Move
 
     def set_mass_center(self):
-        self.mass_center = shapely.Point((self.position[0]*TILE_SIZE + TILE_SIZE / 2, self.position[1]*TILE_SIZE + TILE_SIZE / 2))
+        self.mass_center = shapely.Point((self.position[0]*ROBOT_SIZE + ROBOT_SIZE / 2, self.position[1]*ROBOT_SIZE + ROBOT_SIZE / 2))
 
     def move(self, action: RobotBase.Action):
         if action == action.TURN_LEFT:

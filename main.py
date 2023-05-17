@@ -47,7 +47,7 @@ if __name__ == '__main__':
     window.push_handlers(keys)
 
     world = GridWorld((RES_HEIGHT, RES_WIDTH), TILE_SIZE, SENSOR_LENGTH, env_batch)
-    robot = Robot(world, 500, 500, rob_batch, sensor_length=SENSOR_LENGTH)
+    robot = Robot(world, 500//TILE_SIZE, 500//TILE_SIZE, rob_batch, sensor_length=SENSOR_LENGTH)
     robot_view = RobotView(robot, rob_batch)
 
     dd = True
