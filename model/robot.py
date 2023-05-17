@@ -11,7 +11,6 @@ from base.robot import RobotBase
 
 class Robot(RobotBase):
 
-
     directions = [
         np.array([0, 1]),
         np.array([1, 1]),
@@ -39,7 +38,7 @@ class Robot(RobotBase):
         self.sensor_length = sensor_length
         self.mass_center = shapely.Point((x + TILE_SIZE / 2, y + TILE_SIZE / 2))
 
-        # region GUI
+        # region Sensor
 
         self.batch = batch
         self.laser_color = (124, 252, 0)
@@ -52,11 +51,11 @@ class Robot(RobotBase):
 
         self.world = world
         self.collision_dict = world.collision_dict
-        # self.true_measurements = self.precompute_measurements(world.height, world.width, world.tile_size)
+        self.true_measurements = self.precompute_measurements(world.height, world.width, world.tile_size)
 
-        # self.believe = np.ones_like(self.true_measurements)
-        # self.believe[~self.world.walkable] = 0
-        # self.believe /= self.believe.sum()
+        self.believe = np.ones_like(self.true_measurements)
+        self.believe[~self.world.walkable] = 0
+        self.believe /= self.believe.sum()
 
         print()
 
@@ -87,10 +86,7 @@ class Robot(RobotBase):
 
     # endregion
 
-    # region Move and Sense
-
-    def set_mass_center(self):
-        self.mass_center = shapely.Point((self.position[0] + TILE_SIZE / 2, self.position[1] + TILE_SIZE / 2))
+    # region Sensor
 
     def get_intersection(self, world):
 
@@ -142,11 +138,16 @@ class Robot(RobotBase):
 
         x2 = line.coords.xy[0][1]
         y2 = line.coords.xy[1][1]
-        # print(line.coords.xy)
         return DisplayableLine(x + TILE_SIZE / 2, y + TILE_SIZE / 2, x2, y2, color=self.laser_color, batch=self.batch)
 
+    # endregion
+
+    # region Move
+
+    def set_mass_center(self):
+        self.mass_center = shapely.Point((self.position[0] + TILE_SIZE / 2, self.position[1] + TILE_SIZE / 2))
+
     def move(self, action: RobotBase.Action):
-        print(action)
         if action == action.TURN_LEFT:
             self.orientation = self.Direction((self.orientation.value - 1) % len(self.Direction))
         elif action == action.TURN_RIGHT:
@@ -164,13 +165,16 @@ class Robot(RobotBase):
                 return
 
             self.set_position(new_pos)
+            print(f'New position: {self.position * TILE_SIZE}')
+
+        # region Sensor
 
         self.sensor.delete()
         self.sensor = self.get_sensor(self.orientation)
         self.set_mass_center()
 
-        self.on_move.notify()
+        # endregion
 
-        # print(f'New position: {self.location + Robot.directions[direction.value] * TILE_SIZE}')
+        self.on_move.notify()
 
     # endregion
