@@ -39,7 +39,7 @@ class LaserSensor(SensorBase):
 
     def sense(self, xy: np.ndarray, direction: RobotBase.Direction, raw: bool = False) -> np.ndarray:
         self.laser_beam_obj.delete()
-        gy, gx = xy * TILE_SIZE
+        gx, gy = xy * TILE_SIZE
 
         mass_center = shapely.Point((gx, gy))
         self.laser_beam_obj = self.create_laser_beam_object(gx, gy, direction)
@@ -48,7 +48,10 @@ class LaserSensor(SensorBase):
         closest_obj = None
 
         for object in self.world.objects:
-            intersection = object.shapely_shape.exterior.intersection(self.laser_beam_obj.shapely_shape)
+            if object.shapely_shape.geom_type == "LineString":
+                intersection = object.shapely_shape.intersection(self.laser_beam_obj.shapely_shape)
+            else:
+                intersection = object.shapely_shape.exterior.intersection(self.laser_beam_obj.shapely_shape)
             if not intersection.is_empty:
                 if intersection.geom_type == "LineString":
                     intersection = intersection.boundary
