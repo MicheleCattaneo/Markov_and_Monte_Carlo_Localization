@@ -62,7 +62,8 @@ class Robot(RobotBase):
                         continue
 
                     means[i, j, d] = self.sensor.sense(np.array([i, j]) + ROBOT_SIZE, self.Direction(d))
-        means.setflags(write=False)
+        # reset sensor to fit the robots position
+        self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
         return means
 
     def measurement_probability(self, measurement: float) -> float:
@@ -85,7 +86,7 @@ class Robot(RobotBase):
         try:
             filter = self.movement_model.get_filter(action)
             for i in range(filter.shape[-1]):
-                self.belief[:, :, i] = convolve2d(self.belief[:, :, i], filter[:, :, i], mode='same', boundary="wrap")
+                self.belief[:, :, i] = convolve2d(self.belief[:, :, i], filter[:, :, i], mode='same')
             return
         except InvalidActionException:
             pass
