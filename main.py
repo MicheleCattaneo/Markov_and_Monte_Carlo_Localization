@@ -45,8 +45,8 @@ if __name__ == '__main__':
 
     world = GridWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
 
-    sensor = LaserSensor(20 + TILE_SIZE * ROBOT_SIZE, 10 + TILE_SIZE * ROBOT_SIZE, world, SENSOR_LENGTH, rob_batch)
-    robot = Robot(world, 20 // TILE_SIZE, 10 // TILE_SIZE, DiscreteMovementModel(), sensor)
+    sensor = LaserSensor((ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE, world, SENSOR_LENGTH, rob_batch)
+    robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, DiscreteMovementModel(), sensor)
     robot_view = RobotView(robot, rob_batch)
 
 
