@@ -1,51 +1,59 @@
+from typing import List, Tuple
+
 import numpy as np
 from shapely.geometry import Polygon as ShapelyPolygon
 
-from base.shapes import DisplayableRectangle
+from base.shapes import DisplayableRectangle, DisplayableLine
 
 
 class GridWorld:
 
-    def __init__(self, resolution, tile_size, sensor_range: float, batch) -> None:
-        self.resolution = resolution
+    def __init__(self, width: int, height: int, tile_size, batch) -> None:
         self.tile_size = tile_size
-        self.height, self.width = np.array(resolution) // tile_size
-
-        self.sensor_range = sensor_range
+        self.height, self.width = np.array([height, width]) // tile_size
 
         self.objects = [
-            # DisplayableRectangle(300, 250, 100, 200, color=(255, 20, 147), batch=batch),
-            # DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch),
-            # DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch),
-            # DisplayableRectangle(300, 500, 200, 100, color=(255, 20, 147), batch=batch),
-            DisplayableRectangle(10, 70, 20, 20, color=(255, 20, 147), batch=batch)
-        ]
+                           # DisplayableRectangle(300, 250, 100, 200, color=(255, 20, 147), batch=batch),
+                           # DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch),
+                           # DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch),
+                           # DisplayableRectangle(300, 500, 200, 100, color=(255, 20, 147), batch=batch),
+                           DisplayableRectangle(tile_size, 7 * tile_size, 2 * tile_size, 2 * tile_size,
+                                                color=(255, 20, 147), batch=batch),
+                           DisplayableRectangle(5 * tile_size, 12 * tile_size, 2 * tile_size, 2 * tile_size,
+                                                color=(255, 20, 147), batch=batch)
+                       ] + self._get_walls(width, height, (255, 255, 255), batch)
 
         self.walkable = self._compute_walkable_areas()
 
+    def _get_walls(self, width: int, height: int, color: Tuple[int, int, int], batch) -> List[DisplayableLine]:
+        return [
+            DisplayableRectangle(0, 0, width, self.tile_size, color=color, batch=batch),
+            DisplayableRectangle(0, 0, self.tile_size, height, color=color, batch=batch),
+            DisplayableRectangle(width - self.tile_size, 0, self.tile_size, height, color=color, batch=batch),
+            DisplayableRectangle(0, height - self.tile_size, width, self.tile_size, color=color, batch=batch)
+        ]
+
     def _compute_walkable_areas(self):
-        '''
+        """
         Returns a dictionary containing a pair (i,j) when the corresponding tile
         as indices i,j contains an object. The robot can not go on those tiles.
-        '''
+        """
         width = self.tile_size - 2
-        walkable = np.ones((self.height, self.width), dtype=bool)
-        for x in range(0, self.resolution[0], self.tile_size):
-            for y in range(0, self.resolution[1], self.tile_size):
+        walkable = np.ones((self.width, self.height), dtype=bool)
+        for x in range(0, self.width * self.tile_size, self.tile_size):
+            for y in range(0, self.height * self.tile_size, self.tile_size):
                 # create a fake robot body, 
                 # of 1 pixel smaller in each direction (e.g 9x9 instead of 10x10)
-                robot_body = ShapelyPolygon([[x+1, y+1], 
-                                             [x+1 + width, y+1], 
-                                             [x+1 + width, y + width+1], 
-                                             [x+1, y + width+1]])
-                
+                robot_body = ShapelyPolygon([[x + 1, y + 1],
+                                             [x + 1 + width, y + 1],
+                                             [x + 1 + width, y + width + 1],
+                                             [x + 1, y + width + 1]])
+
                 # For each object in the world, check whether the fake body would
                 # intersect or be contained by the object
                 for o in self.objects:
                     if o.shapely_shape.contains(robot_body) or o.shapely_shape.intersects(robot_body):
-                        walkable[x//self.tile_size, y//self.tile_size] = False
+                        walkable[x // self.tile_size, y // self.tile_size] = False
                         break
 
         return walkable
-
-

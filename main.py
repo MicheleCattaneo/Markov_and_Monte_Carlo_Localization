@@ -20,8 +20,6 @@ from model.movement_model import DiscreteMovementModel
 
 
 def update(dt):
-    print(f'Dt={dt}', np.argwhere(robot.belief == robot.belief.max()), "max prob position")
-
     if COMMAND_TYPE == 'KEYBOARD':
         if keys[key.UP]:
             robot.move(Robot.Action.FORWARD)
@@ -34,12 +32,10 @@ def update(dt):
     else:
         r = np.random.random()
 
-        robot.move(Robot.Action(int(r*4)))
-
+        robot.move(Robot.Action(int(r * 4)))
 
 
 if __name__ == '__main__':
-
     window = Window(height=RES_HEIGHT, width=RES_WIDTH)
     env_batch = pyglet.graphics.Batch()
     rob_batch = pyglet.graphics.Batch()
@@ -47,11 +43,12 @@ if __name__ == '__main__':
     keys = key.KeyStateHandler()
     window.push_handlers(keys)
 
-    world = GridWorld((RES_WIDTH, RES_HEIGHT), TILE_SIZE, SENSOR_LENGTH, env_batch)
+    world = GridWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
 
-    sensor = LaserSensor(20+TILE_SIZE*ROBOT_SIZE, 10+TILE_SIZE*ROBOT_SIZE, world, SENSOR_LENGTH, rob_batch)
-    robot = Robot(world, 20//TILE_SIZE, 10//TILE_SIZE, DiscreteMovementModel(), sensor)
+    sensor = LaserSensor((ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE, world, SENSOR_LENGTH, rob_batch)
+    robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, DiscreteMovementModel(), sensor)
     robot_view = RobotView(robot, rob_batch)
+
 
     @window.event
     def on_draw():
