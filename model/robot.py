@@ -1,4 +1,5 @@
 import numpy as np
+from PIL import Image
 
 from base.sensor import SensorBase
 from base.movement_models import InvalidActionException, MovementModelBase
@@ -7,6 +8,7 @@ from base.robot import RobotBase
 from scipy.signal import convolve2d
 import seaborn as sns
 import matplotlib.pyplot as plt
+from scipy.ndimage import rotate
 
 
 class Robot(RobotBase):
@@ -46,8 +48,6 @@ class Robot(RobotBase):
             fig.savefig(f'./plots/true_measurements_{i}.png')
 
         self.movement_model = movement_model
-
-        print()
 
     # region Markov
 
@@ -98,19 +98,24 @@ class Robot(RobotBase):
     def plot_8_orientations(self):
         fig, ax = plt.subplots(3, 3, figsize=(12, 12))
 
-        row, col = 0, 0
-        j = 0
-        for _ in range(9):
-            if row == 1 and col == 1:
-                col += 1
-                continue
-            sns.heatmap(self.belief[:, :, j].T, ax=ax[row, col], linewidths=0.1)
-            ax[row, col].invert_yaxis()
-            col += 1
-            j += 1
-            if col % 3 == 0:
-                col = 0
-                row += 1
+        indices = [
+            [7, 0, 1],
+            [6, None, 2],
+            [5, 4, 3]
+        ]
+        for i in range(3):
+            for j in range(3):
+                if i == 1 and j == 1:
+                    img = np.asarray(Image.open("rob.png"))
+                    img = rotate(img, 90 - 45*self.orientation.value, reshape=False)
+                    ax[i, j].imshow(img)
+                    ax[i, j].axis("off")
+                    continue
+                idx = indices[i][j]
+                sns.heatmap(self.belief[:, :, idx].T, ax=ax[i, j], linewidths=0.1)
+                ax[i, j].title.set_text(self.Direction(idx).name.replace("_", " "))
+
+                ax[i, j].invert_yaxis()
         fig.savefig("plots/probs.png")
         fig.show()
 
