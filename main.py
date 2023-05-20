@@ -57,5 +57,5 @@ if __name__ == '__main__':
         rob_batch.draw()
 
 
-    pyglet.clock.schedule_interval(update, 0.1)
+    pyglet.clock.schedule_interval(update, 0.5)
     app.run()

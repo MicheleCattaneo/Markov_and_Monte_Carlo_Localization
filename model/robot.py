@@ -9,6 +9,7 @@ from scipy.signal import convolve2d
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.ndimage import rotate
+from scipy.stats import norm
 
 
 class Robot(RobotBase):
@@ -49,6 +50,8 @@ class Robot(RobotBase):
 
         self.movement_model = movement_model
 
+        print()
+
     # region Markov
 
     def precompute_measurements(self, width: int, height: int):
@@ -66,18 +69,23 @@ class Robot(RobotBase):
         self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
         return means
 
-    def measurement_probability(self, measurement: float) -> float:
+    def measurement_probability(self, measurement: float) -> np.ndarray:
         """
         Given a measurement, returns the probability
         of being at a position and measuring the given measurement.
         """
         return np.isclose(self.true_measurements, measurement).astype('int')
 
-    def measurement_probability_uncertain(self, measurement: float, location: tuple) -> float:
-        pass
+    def measurement_probability_uncertain(self, measurement: float) -> np.ndarray:
+        # create nd-array of gaussians, centered at the true measurement.
+        std = 1.
+        gaussians = np.random.normal(self.true_measurements, std, size=self.true_measurements.shape)
+
+        # Sample the measurement from the PDFs 
+        return norm.pdf(measurement, gaussians)
 
     def see(self, measurement):
-        self.belief = self.measurement_probability(measurement) * self.belief
+        self.belief = self.measurement_probability_uncertain(measurement) * self.belief
         self.belief = self.belief / self.belief.sum()
 
         # assert np.isclose(self.belief.sum(), 1.), f'sum is not 1 {self.belief.sum()}'
@@ -96,6 +104,8 @@ class Robot(RobotBase):
     # endregion
 
     def plot_8_orientations(self):
+        plt.close()
+        colormap=sns.color_palette("PuBuGn", as_cmap=True)
         fig, ax = plt.subplots(3, 3, figsize=(12, 12))
 
         indices = [
@@ -112,12 +122,12 @@ class Robot(RobotBase):
                     ax[i, j].axis("off")
                     continue
                 idx = indices[i][j]
-                sns.heatmap(self.belief[:, :, idx].T, ax=ax[i, j], linewidths=0.1)
+                sns.heatmap(self.belief[:, :, idx].T, ax=ax[i, j], linewidths=0.1, cmap=colormap)
                 ax[i, j].title.set_text(self.Direction(idx).name.replace("_", " "))
 
                 ax[i, j].invert_yaxis()
         fig.savefig("plots/probs.png")
-        fig.show()
+        # fig.show()
 
     # region Move
 

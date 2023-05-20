@@ -45,6 +45,7 @@ class LaserSensor(SensorBase):
         self.laser_beam_obj = self.create_laser_beam_object(gx, gy, direction)
 
         closest_dist = np.inf
+        # closest_dist = -1
         closest_obj = None
 
         for object in self.world.objects:
@@ -77,7 +78,11 @@ class LaserSensor(SensorBase):
             # Add new DisplayableIntersection
             self.closest_sensed_obj = DisplayableIntersection(closest_obj.x, closest_obj.y,
                                                               TILE_SIZE, 3, TILE_SIZE, color=(255, 255, 0), batch=self.batch)
-        return closest_dist
+            
+        # default measurement can not be 'inf' because it creates issues when modelling
+        # measurement probabilities with an infinite mean:
+        # E.g: if p(i|l) ~ Norm(inf, 1), when sampling 'inf' from the pdf generates NaNs.
+        return closest_dist if closest_dist != float('inf') else -1
 
     def print_sensor_loc(self):
         print("Sensor loc: ", self.laser_beam_obj.shapely_shape.coords.xy)
