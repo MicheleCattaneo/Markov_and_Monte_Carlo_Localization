@@ -78,7 +78,7 @@ class Robot(RobotBase):
 
     def measurement_probability_uncertain(self, measurement: float) -> np.ndarray:
         # create nd-array of gaussians, centered at the true measurement.
-        std = 1.
+        std = 2.
         gaussians = np.random.normal(self.true_measurements, std, size=self.true_measurements.shape)
 
         # Sample the measurement from the PDFs 
@@ -148,8 +148,10 @@ class Robot(RobotBase):
                 return
             self.set_position(new_pos)
 
-        reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
-        assert reading == self.true_measurements[self.state], "True measurements are incorrect"
+        # reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
+        reading = self.sensor.sense_uncertain(self.position + ROBOT_SIZE, self.orientation)
+
+        # assert reading == self.true_measurements[self.state], "True measurements are incorrect"
 
         self.act(action)
         self.see(reading)

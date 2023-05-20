@@ -83,6 +83,9 @@ class LaserSensor(SensorBase):
         # measurement probabilities with an infinite mean:
         # E.g: if p(i|l) ~ Norm(inf, 1), when sampling 'inf' from the pdf generates NaNs.
         return closest_dist if closest_dist != float('inf') else -1
+    
+    def sense_uncertain(self, xy: np.ndarray, direction: RobotBase.Direction, raw: bool = False):
+        return  np.random.normal(self.sense(xy, direction), 2., 1)
 
     def print_sensor_loc(self):
         print("Sensor loc: ", self.laser_beam_obj.shapely_shape.coords.xy)
