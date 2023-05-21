@@ -19,6 +19,13 @@ class DisplayableRectangle(shapes.Rectangle, DisplayableShape):
 
     def intersect(self, other):
         return self.shapely_shape.intersection(other.shapely_shape)
+    
+
+class DisplayableCircle(shapes.Circle, DisplayableShape):
+    def __init__(self, x, y, radius, segments=None, color=..., batch=None, group=None):
+        super().__init__(x, y, radius, segments, color, batch, group)
+
+        self.shapely_shape =ShapelyPoint(x, y).buffer(radius)
 
 
 class DisplayableLine(shapes.Line, DisplayableShape):

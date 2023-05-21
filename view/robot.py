@@ -4,6 +4,7 @@ from definitions import *
 from base.observer_pattern import Observer
 from base.robot import RobotBase
 from base.shapes import DisplayableRectangle
+from base.shapes import DisplayableCircle
 
 
 class RobotView(Observer):
@@ -23,8 +24,12 @@ class RobotView(Observer):
         if self.body:
             self.body.delete()
 
-        self.body = DisplayableRectangle(
-            x, y, TILE_SIZE, TILE_SIZE,
-            color=self.color, batch=self.batch)
+        # self.body = DisplayableRectangle(
+        #     x, y, TILE_SIZE, TILE_SIZE,
+        #     color=self.color, batch=self.batch)
+        self.body = DisplayableCircle(x+TILE_SIZE // 2, 
+                                      y+TILE_SIZE // 2, 
+                                      TILE_SIZE // 2, 
+                                      color=self.color, batch=self.batch)
         self.body.opacity = 128
 

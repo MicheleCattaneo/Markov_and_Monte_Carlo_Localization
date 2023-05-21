@@ -15,6 +15,7 @@ from pyglet.window import key
 
 from model.sensor import LaserSensor
 from view.robot import RobotView
+from view.probs_grid import ProbabilitiesView
 
 from model.movement_model import DiscreteMovementModel
 
@@ -48,6 +49,8 @@ if __name__ == '__main__':
     sensor = LaserSensor((ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE, world, SENSOR_LENGTH, rob_batch)
     robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, DiscreteMovementModel(), sensor)
     robot_view = RobotView(robot, rob_batch)
+
+    probabilities_view = ProbabilitiesView(robot, env_batch, RES_WIDTH, RES_HEIGHT, TILE_SIZE, world.walkable)
 
 
     @window.event

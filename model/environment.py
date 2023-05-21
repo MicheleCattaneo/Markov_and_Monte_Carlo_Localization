@@ -17,9 +17,11 @@ class GridWorld:
                            # DisplayableRectangle(400, 250, 200, 100, color=(255, 20, 147), batch=batch),
                            # DisplayableRectangle(100, 350, 200, 100, color=(255, 20, 147), batch=batch),
                            # DisplayableRectangle(300, 500, 200, 100, color=(255, 20, 147), batch=batch),
-                           DisplayableRectangle(tile_size, 7 * tile_size, 2 * tile_size, 2 * tile_size,
+                            DisplayableRectangle(tile_size, 7 * tile_size, 2 * tile_size, 2 * tile_size,
                                                 color=(255, 20, 147), batch=batch),
-                           DisplayableRectangle(5 * tile_size, 12 * tile_size, 2 * tile_size, 2 * tile_size,
+                            DisplayableRectangle(5 * tile_size, 12 * tile_size, 2 * tile_size, 2 * tile_size,
+                                                color=(255, 20, 147), batch=batch),
+                            DisplayableRectangle(5 * tile_size, 5 * tile_size, 4 * tile_size, 3 * tile_size,
                                                 color=(255, 20, 147), batch=batch)
                        ] + self._get_walls(width, height, (255, 255, 255), batch)
 

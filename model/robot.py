@@ -85,7 +85,9 @@ class Robot(RobotBase):
         return norm.pdf(measurement, gaussians)
 
     def see(self, measurement):
-        self.belief = self.measurement_probability_uncertain(measurement) * self.belief
+        # self.belief = self.measurement_probability_uncertain(measurement) * self.belief
+        self.belief = self.measurement_probability(measurement) * self.belief
+        
         self.belief = self.belief / self.belief.sum()
 
         # assert np.isclose(self.belief.sum(), 1.), f'sum is not 1 {self.belief.sum()}'
@@ -148,8 +150,8 @@ class Robot(RobotBase):
                 return
             self.set_position(new_pos)
 
-        # reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
-        reading = self.sensor.sense_uncertain(self.position + ROBOT_SIZE, self.orientation)
+        reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
+        # reading = self.sensor.sense_uncertain(self.position + ROBOT_SIZE, self.orientation)
 
         # assert reading == self.true_measurements[self.state], "True measurements are incorrect"
 
