@@ -55,7 +55,8 @@ class ProbabilitiesView(Observer):
                 j = y // self.tile_size
                 if self.tiles[i, j]:
                     new_opacity = rescale(robot_probs_sum[i, j], min_prob, max_prob, 0, 255)
-                    self.tiles[i, j].opacity = new_opacity
+                    self.tiles[i, j].opacity = int(new_opacity)
+
 
 
     
