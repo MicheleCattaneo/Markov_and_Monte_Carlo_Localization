@@ -37,6 +37,12 @@ def update(dt):
 
 
 if __name__ == '__main__':
+    # Enable transparency
+    pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+
+    # Set the blending function
+    pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+
     window = Window(height=RES_HEIGHT, width=RES_WIDTH)
     env_batch = pyglet.graphics.Batch()
     rob_batch = pyglet.graphics.Batch()
