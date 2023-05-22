@@ -26,6 +26,7 @@ class DisplayableObstacle(DisplayableRectangle):
         super().__init__(x, y, width, height, color, batch, group)
 
         self.sprite = None
+        self.batch = batch
         self.load_texture()
 
     def load_texture(self):
@@ -35,6 +36,7 @@ class DisplayableObstacle(DisplayableRectangle):
         cropped_texture = original_texture.get_region(0, 0, original_texture.width, original_texture.height)
     
         self.sprite = sprite.Sprite(cropped_texture, x=self.x, y=self.y, batch=self.batch)
+        self.opacity = 0
     
         self.sprite.scale_x = self.width / original_texture.width
         self.sprite.scale_y = self.height / original_texture.height
