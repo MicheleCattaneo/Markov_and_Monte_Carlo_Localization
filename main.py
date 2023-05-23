@@ -5,7 +5,7 @@ import pyglet
 from pyglet import app
 from pyglet.window import Window
 
-import sys
+import sys, os
 
 from shapely import affinity
 
@@ -18,7 +18,6 @@ from view.robot import RobotView
 from view.probs_grid import ProbabilitiesView
 
 from model.movement_model import DiscreteMovementModel
-
 
 def update(dt):
     if COMMAND_TYPE == 'KEYBOARD':
@@ -37,6 +36,8 @@ def update(dt):
 
 
 if __name__ == '__main__':
+    os.makedirs('plots', exist_ok=True)
+
     # Enable transparency
     pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 
