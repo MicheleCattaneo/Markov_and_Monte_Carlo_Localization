@@ -5,6 +5,8 @@ import pyglet
 from pyglet import app
 from pyglet.window import Window
 
+import os
+
 from model.environment import GridWorld
 from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.robot import Robot
@@ -34,6 +36,7 @@ def update(dt: float) -> None:
 
 
 if __name__ == '__main__':
+    os.makedirs('plots', exist_ok=True)
 
     # region Pyglet Setup
 
