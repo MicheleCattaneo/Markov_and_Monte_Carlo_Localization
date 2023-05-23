@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from base.localization import LocalizationBase
+
 import abc
 from enum import Enum
 from typing import Optional, Union, Tuple
@@ -35,6 +40,8 @@ class RobotBase(abc.ABC):
     Array containing the x, y coordinate of the robot.
     """
     position: np.ndarray
+
+    localization: LocalizationBase
 
     on_move: Subject = Subject()
 

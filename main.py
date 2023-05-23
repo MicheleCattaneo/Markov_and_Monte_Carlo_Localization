@@ -5,22 +5,19 @@ import pyglet
 from pyglet import app
 from pyglet.window import Window
 
-import sys
-
-from shapely import affinity
-
 from model.environment import GridWorld
+from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.robot import Robot
 from pyglet.window import key
 
-from model.sensor import LaserSensor
+from model.sensors import LaserSensor, UncertainLaserSensor
 from view.robot import RobotView
-from view.probs_grid import ProbabilitiesView
+from view.probs_grid import LocalizationBeliefView
 
 from model.movement_model import DiscreteMovementModel
 
 
-def update(dt):
+def update(dt: float) -> None:
     if COMMAND_TYPE == 'KEYBOARD':
         if keys[key.UP]:
             robot.move(Robot.Action.FORWARD)
@@ -37,6 +34,9 @@ def update(dt):
 
 
 if __name__ == '__main__':
+
+    # region Pyglet Setup
+
     # Enable transparency
     pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
 
@@ -50,14 +50,25 @@ if __name__ == '__main__':
     keys = key.KeyStateHandler()
     window.push_handlers(keys)
 
+    # endregion
+
+    # region Variable Initializations
+
     world = GridWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
 
-    sensor = LaserSensor((ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE, world, SENSOR_LENGTH, rob_batch)
-    robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, DiscreteMovementModel(), sensor)
+    sensor = UncertainLaserSensor(
+        (ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE,
+        world, SENSOR_LENGTH, rob_batch)
+    localization = UncertainMarkovLocalization(world, sensor, DiscreteMovementModel())
+
+    robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
+
     robot_view = RobotView(robot, rob_batch)
+    probabilities_view = LocalizationBeliefView(robot, world, env_batch)
 
-    probabilities_view = ProbabilitiesView(robot, env_batch, RES_WIDTH, RES_HEIGHT, TILE_SIZE, world.walkable)
+    # endregion
 
+    # region Pyglet Run
 
     @window.event
     def on_draw():
@@ -68,3 +79,5 @@ if __name__ == '__main__':
 
     pyglet.clock.schedule_interval(update, 0.5)
     app.run()
+
+    # endregion

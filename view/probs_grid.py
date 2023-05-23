@@ -1,58 +1,56 @@
+from PIL import Image
+from matplotlib import pyplot as plt
+import seaborn as sns
+import numpy as np
+import pyglet.graphics
+from scipy.ndimage import rotate
+
 from base.observer_pattern import Observer
 from base.robot import RobotBase
 from base.shapes import DisplayableRectangle
-import numpy as np
-import pyglet.graphics
+from model.environment import GridWorld
 
 
-
-class ProbabilitiesView(Observer):
+class LocalizationBeliefView(Observer):
     '''
     View of probabilities (pose belief) on the grid of possible poses.
     '''
-    def __init__(self, robot: RobotBase, batch: pyglet.graphics.Batch, 
-                 res_width: int, 
-                 res_height: int, 
-                 tile_size,
-                 walkable) -> None:
-        
-        super().__init__()
-        self.robot = robot
-        self.batch = batch
-        self.res_width = res_width
-        self.res_height = res_height
-        self.tile_size = tile_size
 
-        self.tiles = np.empty(walkable.shape, dtype=object)
+    def __init__(self, robot: RobotBase, world: GridWorld, batch: pyglet.graphics.Batch) -> None:
+        self.robot = robot
+        self.world = world
+
+        self.tiles = np.empty_like(world.walkable, dtype=object)
 
         # print(walkable.shape)
         color = (0, 0, 255)
-        for i in range(0, res_width, tile_size):
-            for j in range(0, res_height, tile_size):
-                # print(i,j)
-                if walkable[i // tile_size, j // tile_size]:
-                    self.tiles[i // tile_size, j // tile_size] = DisplayableRectangle(
-                        i+1, j+1, tile_size-2, tile_size-2,
-                        color = color, batch=self.batch)
-                
+        tile_size = world.tile_size
+        for i in range(world.width):
+            for j in range(world.height):
+                if world.walkable[i, j]:
+                    self.tiles[i, j] = DisplayableRectangle(
+                        i * tile_size + 1, j * tile_size + 1, tile_size - 2, tile_size - 2,
+                        color=color, batch=batch)
+
         self.robot.on_move.subscribe(self)
 
-
     def update(self) -> None:
+        self.color_tiles_according_to_localization_beliefs()
+        self.plot_8_orientations()
+
+    def color_tiles_according_to_localization_beliefs(self):
         # sum probabilities over the rotation dimension
-        robot_probs_sum = self.robot.belief.sum(axis=2)
+        robot_probs_sum = self.robot.localization.belief.sum(axis=2)
         min_prob = robot_probs_sum.min()
         max_prob = robot_probs_sum.max()
 
         def rescale(x, old_min, old_max, new_min, new_max):
-            return  ( (x - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
-        
-        # for each walkable tile, change the opacity by rescaling it 
+            return ((x - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
+
+        # for each walkable tile, change the opacity by rescaling it
         # from (min_prob, max_prob) to (0,255)
-        for x in range(0, self.res_width, self.tile_size):
-            for y in range(0, self.res_height, self.tile_size):
-                i = x // self.tile_size
-                j = y // self.tile_size
+        for i in range(self.world.width):
+            for j in range(self.world.height):
                 if self.tiles[i, j]:
                     if robot_probs_sum[i, j] == 0:
                         self.tiles[i, j].opacity = 255
@@ -62,6 +60,28 @@ class ProbabilitiesView(Observer):
                         self.tiles[i, j].opacity = int(new_opacity)
                         self.tiles[i, j].color = (0, 0, 255)
 
+    def plot_8_orientations(self):
+        plt.close()
+        colormap = sns.color_palette("PuBuGn", as_cmap=True)
+        fig, ax = plt.subplots(3, 3, figsize=(12, 12))
 
+        indices = [
+            [7, 0, 1],
+            [6, None, 2],
+            [5, 4, 3]
+        ]
+        for i in range(3):
+            for j in range(3):
+                if i == 1 and j == 1:
+                    img = np.asarray(Image.open("rob.png"))
+                    img = rotate(img, 90 - 45*self.robot.orientation.value, reshape=False)
+                    ax[i, j].imshow(img)
+                    ax[i, j].axis("off")
+                    continue
+                idx = indices[i][j]
+                sns.heatmap(self.robot.localization.belief[:, :, idx].T, ax=ax[i, j], linewidths=0.1, cmap=colormap)
+                ax[i, j].title.set_text(self.robot.Direction(idx).name.replace("_", " "))
 
-    
+                ax[i, j].invert_yaxis()
+        fig.savefig("plots/probs.png")
+        # fig.show()

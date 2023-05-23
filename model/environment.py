@@ -11,6 +11,7 @@ class GridWorld:
     def __init__(self, width: int, height: int, tile_size, batch) -> None:
         self.tile_size = tile_size
         self.height, self.width = np.array([height, width]) // tile_size
+        self.batch = batch
 
         self.objects = [
                            # DisplayableRectangle(300, 250, 100, 200, color=(255, 20, 147), batch=batch),
@@ -42,9 +43,11 @@ class GridWorld:
         """
         width = self.tile_size - 2
         walkable = np.ones((self.width, self.height), dtype=bool)
-        for x in range(0, self.width * self.tile_size, self.tile_size):
-            for y in range(0, self.height * self.tile_size, self.tile_size):
-                # create a fake robot body, 
+        for i in range(self.width):
+            for j in range(self.height):
+                x, y = np.array([i, j]) * self.tile_size
+
+                # create a fake robot body,
                 # of 1 pixel smaller in each direction (e.g 9x9 instead of 10x10)
                 robot_body = ShapelyPolygon([[x + 1, y + 1],
                                              [x + 1 + width, y + 1],
@@ -55,7 +58,7 @@ class GridWorld:
                 # intersect or be contained by the object
                 for o in self.objects:
                     if o.shapely_shape.contains(robot_body) or o.shapely_shape.intersects(robot_body):
-                        walkable[x // self.tile_size, y // self.tile_size] = False
+                        walkable[i, j] = False
                         break
 
         return walkable
