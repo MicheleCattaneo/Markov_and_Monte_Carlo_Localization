@@ -11,6 +11,8 @@ from definitions import TILE_SIZE
 
 
 class LaserSensor(SensorBase):
+    """Represents a laser sensor with certain measurements.
+    """    
     rotations = [
         0,
         -45,

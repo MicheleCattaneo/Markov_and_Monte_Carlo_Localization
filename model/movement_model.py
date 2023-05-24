@@ -34,9 +34,25 @@ class DiscreteMovementModel(MovementModelBase):
     
 
 class UncertainMovementModel(MovementModelBase):
+    """Represents an uncertain movement model modelled by probabilities [p1,p2,p3]
+    where p1 is the probability of executing the actual issued command, 
+    p2 is the probability of not executing any command
+    and p3 is the probability of issuing the opposite command.
+    The sum p1 + p2 + p3 must be equal to 1.
+    """    
     
-    def __init__(self) -> None:
-        self.probs = np.array([.8, .1, .1])
+    def __init__(self, probs: np.ndarray = None) -> None:
+        """Initializes an uncertain movement model.
+
+        Args:
+            probs (np.ndarray, optional): a 3-d array containing the probabilities p1,p2 and p3 of executing the issued
+            command, the probability of executing no command and the probability of executing the opposite command.
+            When not defined, default values of [.8,.1,.1] are used.
+        """        
+        if probs:
+            self.probs = probs
+        else:
+            self.probs = np.array([.8, .1, .1])
         assert np.isclose(self.probs.sum(), 1.)
 
     def _get_convolution_forward(self):

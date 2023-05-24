@@ -1,6 +1,7 @@
 import numpy as np
 
 from base.localization import LocalizationBase
+from model.movement_model import DiscreteMovementModel
 from base.sensor import SensorBase
 from definitions import *
 from base.robot import RobotBase
@@ -19,6 +20,15 @@ class Robot(RobotBase):
     ]
 
     def __init__(self, world, x, y, sensor: SensorBase, localization: LocalizationBase) -> None:
+        """Initializes a robot at the given coordinates with a specific sensor type and markov localization method.
+
+        Args:
+            world (model.environment.GridWorld): The world where the robot resides.
+            x (float): the x coordinate
+            y (float): the y coordinate
+            sensor (SensorBase): the sensor type
+            localization (LocalizationBase): the localization type
+        """        
         self.set_position(x, y)
         self.sensor = sensor
 
@@ -35,8 +45,13 @@ class Robot(RobotBase):
         elif action == action.TURN_RIGHT:
             self.orientation = self.Direction((self.orientation.value + 1) % len(self.Direction))
         else:
-
-            uncertainty_multiplier = np.random.choice([1.,0.,-1.], p=self.movement_model.probs)
+            
+            uncertainty_multiplier = 1.
+            # unless the robot uses a deterministic movement model, change the multiplier
+            if not isinstance(self.movement_model, DiscreteMovementModel):
+                # a multiplier of 1 keeps the same direction, 0 annihilates the action 
+                # and -1 reverses the action.
+                uncertainty_multiplier = np.random.choice([1.,0.,-1.], p=self.movement_model.probs)
 
             move_dir = self.orientation.value \
                 if action == action.FORWARD \
