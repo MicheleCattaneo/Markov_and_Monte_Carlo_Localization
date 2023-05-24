@@ -8,6 +8,7 @@ from scipy.ndimage import rotate
 from base.observer_pattern import Observer
 from base.robot import RobotBase
 from base.shapes import DisplayableRectangle
+from definitions import GENERATE_PLOTS
 from model.environment import GridWorld
 
 
@@ -36,29 +37,20 @@ class LocalizationBeliefView(Observer):
 
     def update(self) -> None:
         self.color_tiles_according_to_localization_beliefs()
-        self.plot_8_orientations()
+        if GENERATE_PLOTS:
+            self.plot_8_orientations()
 
     def color_tiles_according_to_localization_beliefs(self):
         # sum probabilities over the rotation dimension
         robot_probs_sum = self.robot.localization.belief.sum(axis=2)
-        min_prob = robot_probs_sum.min()
-        max_prob = robot_probs_sum.max()
-
-        def rescale(x, old_min, old_max, new_min, new_max):
-            return ((x - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
 
         # for each walkable tile, change the opacity by rescaling it
         # from (min_prob, max_prob) to (0,255)
         for i in range(self.world.width):
             for j in range(self.world.height):
                 if self.tiles[i, j]:
-                    if robot_probs_sum[i, j] == 0:
-                        self.tiles[i, j].opacity = 255
-                        self.tiles[i, j].color = (0, 0, 0)
-                    else:
-                        new_opacity = rescale(robot_probs_sum[i, j], min_prob, max_prob, 128, 255)
-                        self.tiles[i, j].opacity = int(new_opacity)
-                        self.tiles[i, j].color = (0, 0, 255)
+                    new_opacity = robot_probs_sum[i, j]**0.1
+                    self.tiles[i, j].opacity = int(new_opacity*255)
 
     def plot_8_orientations(self):
         plt.close()
