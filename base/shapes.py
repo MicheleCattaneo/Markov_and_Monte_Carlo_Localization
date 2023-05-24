@@ -5,6 +5,8 @@ from shapely.geometry import Polygon as ShapelyPolygon
 
 from pyglet import shapes, image, gl, sprite
 
+from definitions import TILE_SIZE, SCALE
+
 
 class DisplayableShape(abc.ABC):
     shapely_shape = None
@@ -46,7 +48,7 @@ class DisplayableCircle(shapes.Circle, DisplayableShape):
     def __init__(self, x, y, radius, segments=None, color=..., batch=None, group=None):
         super().__init__(x, y, radius, segments, color, batch, group)
 
-        self.shapely_shape =ShapelyPoint(x, y).buffer(radius)
+        self.shapely_shape = ShapelyPoint(x, y).buffer(radius)
 
 
 class DisplayableRobot(DisplayableShape):
@@ -61,7 +63,7 @@ class DisplayableRobot(DisplayableShape):
         self.load_texture()
 
     def load_texture(self):
-        texture_atlas = image.load('./textures/baby_sprites.png').get_texture()
+        texture_atlas = image.load('./textures/robot.png').get_texture()
 
         sprite_x = 0
         sprite_y = 0
@@ -69,26 +71,26 @@ class DisplayableRobot(DisplayableShape):
         sprite_height = texture_atlas.height // 8
 
         sprite_image_data = texture_atlas.get_image_data()
-        sprite_image_data = sprite_image_data.get_region(sprite_x, sprite_y, sprite_width, sprite_height)
+        # sprite_image_data = sprite_image_data.get_region(sprite_x, sprite_y, sprite_width, sprite_height)
         sprite_texture = sprite_image_data.get_texture()
 
-        self.sprite = sprite.Sprite(sprite_texture, x=self.x, y=self.y, batch=self.batch)
-        self.sprite.scale = self.radius / sprite_width  # Scale to match the width of the circle
+        sprite_texture.anchor_x = 50
+        sprite_texture.anchor_y = 50
 
-        self.sprite.scale = self.radius * 3 / sprite_texture.height
+        self.sprite = sprite.Sprite(sprite_texture, x=self.x, y=self.y, batch=self.batch)
+
+        self.sprite.scale = .2 * SCALE
 
         # self.sprite.x = self.x + self.sprite.width // 4
         # self.sprite.y = self.y + self.sprite.height // 4
-
 
     def delete(self):
         if self.sprite is not None:
             self.sprite.delete()
 
     def set_rotation(self, angle):
-        self.sprite.anchor_x = 1* self.sprite.width // 10
-        self.sprite.anchor_y = 1* self.sprite.height // 10
-
+        # self.sprite.image.anchor_x = self.sprite.width // 2
+        # self.sprite.image.anchor_y = self.sprite.height // 2
 
         if self.sprite is not None:
             self.sprite.rotation = angle.value * 45

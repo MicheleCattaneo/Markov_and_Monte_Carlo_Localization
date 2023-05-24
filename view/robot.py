@@ -20,7 +20,7 @@ class RobotView(Observer):
         self.update()
 
     def update(self) -> None:
-        x, y = self.robot.position * TILE_SIZE
+        x, y = self.robot.position * TILE_SIZE + TILE_SIZE//2
         if self.body:
             self.body.delete()
 
