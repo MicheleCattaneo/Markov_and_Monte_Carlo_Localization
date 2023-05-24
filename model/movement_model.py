@@ -31,3 +31,76 @@ class DiscreteMovementModel(MovementModelBase):
         filter[2, 2, (7 + o) % 8] = 1
 
         return filter
+    
+
+class UncertainMovementModel(MovementModelBase):
+    
+    def __init__(self) -> None:
+        self.probs = np.array([.8, .1, .1])
+        assert np.isclose(self.probs.sum(), 1.)
+
+    def _get_convolution_forward(self):
+        filter = np.zeros((3, 3, 8))
+        o = 6
+        # prob. of going forward
+        filter[0, 1, (0 + o) % 8] = self.probs[0]
+        filter[0, 2, (1 + o) % 8] = self.probs[0]
+        filter[1, 2, (2 + o) % 8] = self.probs[0]
+        filter[2, 2, (3 + o) % 8] = self.probs[0]
+        filter[2, 1, (4 + o) % 8] = self.probs[0]
+        filter[2, 0, (5 + o) % 8] = self.probs[0]
+        filter[1, 0, (6 + o) % 8] = self.probs[0]
+        filter[0, 0, (7 + o) % 8] = self.probs[0]
+        # prob. of staying in place
+        filter[1, 1, (0 + o) % 8] = self.probs[1]
+        filter[1, 1, (1 + o) % 8] = self.probs[1]
+        filter[1, 1, (2 + o) % 8] = self.probs[1]
+        filter[1, 1, (3 + o) % 8] = self.probs[1]
+        filter[1, 1, (4 + o) % 8] = self.probs[1]
+        filter[1, 1, (5 + o) % 8] = self.probs[1]
+        filter[1, 1, (6 + o) % 8] = self.probs[1]
+        filter[1, 1, (7 + o) % 8] = self.probs[1]
+        # prob. of going backwards
+        filter[2, 1, (0 + o) % 8] = self.probs[2]
+        filter[2, 0, (1 + o) % 8] = self.probs[2]
+        filter[1, 0, (2 + o) % 8] = self.probs[2]
+        filter[0, 0, (3 + o) % 8] = self.probs[2]
+        filter[0, 1, (4 + o) % 8] = self.probs[2]
+        filter[0, 2, (5 + o) % 8] = self.probs[2]
+        filter[1, 2, (6 + o) % 8] = self.probs[2]
+        filter[2, 2, (7 + o) % 8] = self.probs[2]
+
+        return filter
+
+    def _get_convolution_backward(self):
+        filter = np.zeros((3, 3, 8))
+        o = 6
+        # prob. of going forward
+        filter[0, 1, (0 + o) % 8] = self.probs[2]
+        filter[0, 2, (1 + o) % 8] = self.probs[2]
+        filter[1, 2, (2 + o) % 8] = self.probs[2]
+        filter[2, 2, (3 + o) % 8] = self.probs[2]
+        filter[2, 1, (4 + o) % 8] = self.probs[2]
+        filter[2, 0, (5 + o) % 8] = self.probs[2]
+        filter[1, 0, (6 + o) % 8] = self.probs[2]
+        filter[0, 0, (7 + o) % 8] = self.probs[2]
+        # prob. of staying in place
+        filter[1, 1, (0 + o) % 8] = self.probs[1]
+        filter[1, 1, (1 + o) % 8] = self.probs[1]
+        filter[1, 1, (2 + o) % 8] = self.probs[1]
+        filter[1, 1, (3 + o) % 8] = self.probs[1]
+        filter[1, 1, (4 + o) % 8] = self.probs[1]
+        filter[1, 1, (5 + o) % 8] = self.probs[1]
+        filter[1, 1, (6 + o) % 8] = self.probs[1]
+        filter[1, 1, (7 + o) % 8] = self.probs[1]
+        # prob. of going backwards
+        filter[2, 1, (0 + o) % 8] = self.probs[0]
+        filter[2, 0, (1 + o) % 8] = self.probs[0]
+        filter[1, 0, (2 + o) % 8] = self.probs[0]
+        filter[0, 0, (3 + o) % 8] = self.probs[0]
+        filter[0, 1, (4 + o) % 8] = self.probs[0]
+        filter[0, 2, (5 + o) % 8] = self.probs[0]
+        filter[1, 2, (6 + o) % 8] = self.probs[0]
+        filter[2, 2, (7 + o) % 8] = self.probs[0]
+
+        return filter

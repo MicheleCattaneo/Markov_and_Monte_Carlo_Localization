@@ -10,7 +10,7 @@ import os
 
 from model.robot import Robot
 from model.environment import GridWorld
-from model.movement_model import DiscreteMovementModel
+from model.movement_model import DiscreteMovementModel, UncertainMovementModel
 from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.sensors import LaserSensor, UncertainLaserSensor
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     sensor = UncertainLaserSensor(
         (ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE,
         world, SENSOR_LENGTH, rob_batch)
-    localization = UncertainMarkovLocalization(world, sensor, DiscreteMovementModel())
+    localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel())
 
     robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
 

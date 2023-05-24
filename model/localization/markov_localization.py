@@ -10,6 +10,10 @@ from model.environment import GridWorld
 
 
 class MarkovLocalization(LocalizationBase):
+    """ Represents the logic for Markov Localization assuming perfect measurements.
+        The probability of a measurement i given a pose l is defined as follows:
+            p(i|l) = 1 if i is eps-close to the true measurement and 0 otherwise.
+    """    
 
     def __init__(self, world: GridWorld, sensor: SensorBase, movement_model: MovementModelBase) -> None:
         self.world = world

@@ -24,22 +24,10 @@ class Robot(RobotBase):
 
         self.world = world
         self.localization = localization
+        self.movement_model = self.localization.movement_model
 
         # reset sensor to fit the robots position
         self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
-
-        # fig, ax = plt.subplots(figsize=(8, 4))
-        # sns.heatmap(self.world.walkable, ax=ax, linewidths=0.1)
-        # fig.savefig('./plots/walkable_belief_up.png')
-        #
-        # fig, ax = plt.subplots(figsize=(8, 4))
-        # sns.heatmap(self.belief[:, :, 0], ax=ax, linewidths=0.1)
-        # fig.savefig('./plots/first_belief_up.png')
-        #
-        # for i in range(8):
-        #     fig, ax = plt.subplots(figsize=(8, 4))
-        #     sns.heatmap(self.true_measurements[:, :, i], ax=ax, linewidths=0.1)
-        #     fig.savefig(f'./plots/true_measurements_{i}.png')
 
     def move(self, action: RobotBase.Action):
         if action == action.TURN_LEFT:
@@ -47,11 +35,15 @@ class Robot(RobotBase):
         elif action == action.TURN_RIGHT:
             self.orientation = self.Direction((self.orientation.value + 1) % len(self.Direction))
         else:
+
+            uncertainty_multiplier = np.random.choice([1.,0.,-1.], p=self.movement_model.probs)
+
             move_dir = self.orientation.value \
                 if action == action.FORWARD \
                 else (self.orientation.value + 4) % len(self.Direction)
 
-            new_pos = self.position + Robot.directions[move_dir]
+
+            new_pos = self.position + uncertainty_multiplier * Robot.directions[move_dir]
 
             # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
             if not self.world.walkable[tuple(new_pos.astype(int))]:
