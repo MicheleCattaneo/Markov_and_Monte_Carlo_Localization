@@ -4,19 +4,18 @@ import numpy as np
 import pyglet
 from pyglet import app
 from pyglet.window import Window
+from pyglet.window import key
 
 import os
 
-from model.environment import GridWorld
-from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.robot import Robot
-from pyglet.window import key
-
+from model.environment import GridWorld
+from model.movement_model import DiscreteMovementModel
+from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.sensors import LaserSensor, UncertainLaserSensor
+
 from view.robot import RobotView
 from view.probs_grid import LocalizationBeliefView
-
-from model.movement_model import DiscreteMovementModel
 
 
 def update(dt: float) -> None:
@@ -80,7 +79,7 @@ if __name__ == '__main__':
         rob_batch.draw()
 
 
-    pyglet.clock.schedule_interval(update, 0.5)
+    pyglet.clock.schedule_interval(update, 1/FPS)
     app.run()
 
     # endregion
