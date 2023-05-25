@@ -49,7 +49,7 @@ class UncertainMovementModel(MovementModelBase):
             command, the probability of executing no command and the probability of executing the opposite command.
             When not defined, default values of [.8,.1,.1] are used.
         """        
-        if probs:
+        if probs is not None:
             self.probs = probs
         else:
             self.probs = np.array([.8, .1, .1])

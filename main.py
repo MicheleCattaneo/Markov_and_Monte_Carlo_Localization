@@ -61,7 +61,7 @@ if __name__ == '__main__':
     sensor = UncertainLaserSensor(
         (ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE,
         world, SENSOR_LENGTH, rob_batch)
-    localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel())
+    localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8,0.2,0.0])))
 
     robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
 

@@ -23,7 +23,19 @@ class MarkovLocalization(LocalizationBase):
         self.true_measurements = self._precompute_measurements(world.width, world.height)
 
         self.belief = np.ones_like(self.true_measurements)
+        
+        self.mask_out_belief_on_obstacles()
+        self.normalize_belief()
+        
+    def mask_out_belief_on_obstacles(self):
+        """Annihilates likelihood that ended up in non walkbable regions due to
+        convolutions. This function does not normalize the belief to sum up to 1.
+        """        
         self.belief[~self.world.walkable] = 0
+
+    def normalize_belief(self):
+        """Normalizes the belief to sum up to 1.
+        """        
         self.belief /= self.belief.sum()
 
     def _precompute_measurements(self, width: int, height: int):
@@ -57,6 +69,9 @@ class MarkovLocalization(LocalizationBase):
             filter = self.movement_model.get_filter(action)
             for i in range(filter.shape[-1]):
                 self.belief[:, :, i] = convolve2d(self.belief[:, :, i], filter[:, :, i], mode='same')
+
+            self.mask_out_belief_on_obstacles()
+            self.normalize_belief()
             return
         except InvalidActionException:
             pass
