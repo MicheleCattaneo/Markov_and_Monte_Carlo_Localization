@@ -3,7 +3,7 @@ from typing import List, Tuple
 import numpy as np
 from shapely.geometry import Polygon as ShapelyPolygon
 
-from base.shapes import DisplayableRectangle, DisplayableLine, DisplayableObstacle, DisplayablePolygon
+from base.shapes import DisplayableRectangle, DisplayableObstacle, DisplayablePolygon
 
 
 class GridWorld:
@@ -43,7 +43,7 @@ class GridWorld:
 
         self.walkable = self._compute_walkable_areas()
 
-    def _get_walls(self, width: int, height: int, color: Tuple[int, int, int], batch) -> List[DisplayableLine]:
+    def _get_walls(self, width: int, height: int, color: Tuple[int, int, int], batch) -> List[DisplayableRectangle]:
         return [
             DisplayableRectangle(0, 0, width, self.tile_size, color=color, batch=batch),
             DisplayableRectangle(0, 0, self.tile_size, height, color=color, batch=batch),
