@@ -110,3 +110,11 @@ class DisplayableIntersection(shapes.Star, DisplayableShape):
         super().__init__(x, y, outer_radius, inner_radius, num_spikes, rotation, color, batch, group)
 
         self.shapely_shape = ShapelyPoint(x, y)
+
+
+class DisplayablePolygon(shapes.Polygon, DisplayableShape):
+
+    def __init__(self, *coordinates, color=..., batch=None, group=None):
+        super().__init__(*coordinates, color=color, batch=batch, group=group)
+
+        self.shapely_shape = ShapelyPolygon(coordinates)
