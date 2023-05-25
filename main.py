@@ -15,6 +15,7 @@ from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.sensors import LaserSensor, UncertainLaserSensor
 
 from view.robot import RobotView
+from view.laser import LaserSensorView
 from view.probs_grid import LocalizationBeliefView
 
 
@@ -58,14 +59,13 @@ if __name__ == '__main__':
 
     world = GridWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
 
-    sensor = UncertainLaserSensor(
-        (ROBOT_START_X + ROBOT_SIZE) * TILE_SIZE, (ROBOT_START_Y + ROBOT_SIZE) * TILE_SIZE,
-        world, SENSOR_LENGTH, rob_batch)
-    localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8,0.2,0.0])))
+    sensor = UncertainLaserSensor(world, SENSOR_LENGTH)
+    localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8, 0.2, 0.0])))
 
     robot = Robot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
 
     robot_view = RobotView(robot, rob_batch)
+    laser_view = LaserSensorView(robot, sensor, rob_batch)
     probabilities_view = LocalizationBeliefView(robot, world, env_batch)
 
     # endregion
