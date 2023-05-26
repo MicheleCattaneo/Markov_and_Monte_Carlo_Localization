@@ -1,20 +1,49 @@
+from model.definition import Definition
+from environments import custom, base_with_obstacle
+
 COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 FPS = 15
 
 # Environment
 SCALE = 1  # must be int
-RES_WIDTH = SCALE * 300*2
-RES_HEIGHT = SCALE * 400*2
-TILE_SIZE = SCALE * 20
+ENVIRONMENT = "base_with_obstacle"
+defs = {
+    "custom": Definition(
+        width=30,
+        height=40,
+        robot_start=(20, 30),
+        sensor_len=30*1.5,
+        sensor_sig=5,
+        generate_plots=True,
+        objects=custom
+    ),
+    "base": Definition(
+        width=20,
+        height=20,
+        robot_start=(10, 10),
+        sensor_sig=.7,
+    ),
+    "base_with_obstacle": Definition(
+        width=20,
+        height=20,
+        robot_start=(4, 4),
+        sensor_sig=.7,
+        objects=base_with_obstacle
+    )
+}[ENVIRONMENT]
+
+
+RES_WIDTH = SCALE * defs.width * defs.tile_size
+RES_HEIGHT = SCALE * defs.height * defs.tile_size
+TILE_SIZE = SCALE * defs.tile_size
 
 # Robot
 ROBOT_SIZE = 0.5
-ROBOT_START_X = 20
-ROBOT_START_Y = 30
+ROBOT_START_X, ROBOT_START_Y = defs.robot_start
 
 # Sensor
-SENSOR_LENGTH = TILE_SIZE * 3*300
-MEASUREMENT_SIGMA = TILE_SIZE * 5
+SENSOR_LENGTH = TILE_SIZE * defs.sensor_len
+MEASUREMENT_SIGMA = TILE_SIZE * defs.sensor_sig
 
 # Visualization
 GENERATE_PLOTS = False

@@ -23,7 +23,7 @@ class Robot(RobotBase):
         """Initializes a robot at the given coordinates with a specific sensor type and markov localization method.
 
         Args:
-            world (model.environment.GridWorld): The world where the robot resides.
+            world (model.grid_world.GridWorld): The world where the robot resides.
             x (float): the x coordinate
             y (float): the y coordinate
             sensor (SensorBase): the sensor type

@@ -6,7 +6,7 @@ from base.movement_models import InvalidActionException, MovementModelBase
 from base.robot import RobotBase
 from base.sensor import SensorBase
 from definitions import ROBOT_SIZE
-from model.environment import GridWorld
+from model.grid_world import GridWorld
 
 
 class MarkovLocalization(LocalizationBase):

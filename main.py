@@ -9,7 +9,7 @@ from pyglet.window import key
 import os
 
 from model.robot import Robot
-from model.environment import GridWorld
+from model.grid_world import GridWorld
 from model.movement_model import DiscreteMovementModel, UncertainMovementModel
 from model.localization import MarkovLocalization, UncertainMarkovLocalization
 from model.sensors import LaserSensor, UncertainLaserSensor

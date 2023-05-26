@@ -1,6 +1,7 @@
 import abc
 from shapely import Point as ShapelyPoint
 from shapely.geometry import Polygon as ShapelyPolygon
+from shapely import geometry
 
 from pyglet import shapes, image, sprite
 

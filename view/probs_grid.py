@@ -9,7 +9,7 @@ from base.observer_pattern import Observer
 from base.robot import RobotBase
 from base.shapes import DisplayableRectangle
 from definitions import GENERATE_PLOTS
-from model.environment import GridWorld
+from model.grid_world import GridWorld
 
 
 class LocalizationBeliefView(Observer):
