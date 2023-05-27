@@ -7,7 +7,7 @@ SPEED = 10 # tiles per second
 
 # Environment
 SCALE = 1  # must be int
-ENVIRONMENT = "base_with_obstacle"
+ENVIRONMENT = "custom"
 defs = {
     "custom": Definition(
         width=30,
@@ -15,7 +15,6 @@ defs = {
         robot_start=(20, 30),
         sensor_len=30*1.5,
         sensor_sig=5,
-        generate_plots=True,
         objects=custom
     ),
     "base": Definition(
@@ -23,13 +22,15 @@ defs = {
         height=20,
         robot_start=(10, 10),
         sensor_sig=.7,
+        generate_plots=False
     ),
     "base_with_obstacle": Definition(
         width=20,
         height=20,
         robot_start=(4, 4),
         sensor_sig=.7,
-        objects=base_with_obstacle
+        objects=base_with_obstacle,
+        generate_plots=False
     )
 }[ENVIRONMENT]
 
@@ -43,10 +44,10 @@ ROBOT_SIZE = 0.5
 ROBOT_START_X, ROBOT_START_Y = defs.robot_start
 
 # Sensor
-SENSOR_LENGTH = TILE_SIZE * defs.sensor_len
-MEASUREMENT_SIGMA = TILE_SIZE * defs.sensor_sig
+SENSOR_LENGTH = SCALE * TILE_SIZE * defs.sensor_len
+MEASUREMENT_SIGMA = SCALE * TILE_SIZE * defs.sensor_sig
 
 # Visualization
-GENERATE_PLOTS = False
+GENERATE_PLOTS = defs.generate_plots
 
 assert RES_HEIGHT % TILE_SIZE == 0 and RES_WIDTH % TILE_SIZE == 0, "Width and height should be a multiple of TILE_SIZE"
