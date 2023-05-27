@@ -3,6 +3,7 @@ from environments import custom, base_with_obstacle
 
 COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 FPS = 15
+SPEED = 10 # tiles per second
 
 # Environment
 SCALE = 1  # must be int

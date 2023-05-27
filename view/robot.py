@@ -5,6 +5,8 @@ from definitions import *
 from base.observer_pattern import Observer
 from base.robot import RobotBase
 
+import numpy as np
+
 
 class RobotView(Observer):
 
@@ -19,12 +21,25 @@ class RobotView(Observer):
         self.sprite_texture.anchor_x = self.sprite_texture.width // 2
         self.sprite_texture.anchor_y = self.sprite_texture.height // 2
 
+        self.display_position = self.robot.position.copy().astype(float)
+        self.moving = False
+        self.dt = SPEED / FPS
+        self.dt = min(self.dt, 1.)
+
         self.robot.on_move.subscribe(self)
         self.update()
 
     def update(self) -> None:
-        x, y = self.robot.position * TILE_SIZE + TILE_SIZE // 2
+        if self.moving:
+            self.display_position += self.dt * (self.robot.position - self.display_position)
+            if np.allclose(self.display_position, self.robot.position, atol=0.01):
+                self.display_position = self.robot.position
+                self.moving = False
+        else:
+            if not np.array_equal(self.display_position, self.robot.position):
+                self.moving = True
 
+        x, y = self.display_position * TILE_SIZE + TILE_SIZE // 2
         self.draw_robot(x, y, self.robot.orientation)
 
     def draw_robot(self, x: float, y: float, direction: RobotBase.Direction) -> None:

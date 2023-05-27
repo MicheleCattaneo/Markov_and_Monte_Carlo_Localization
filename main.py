@@ -20,7 +20,9 @@ from view.probs_grid import LocalizationBeliefView
 
 
 def update(dt: float) -> None:
-    if COMMAND_TYPE == 'KEYBOARD':
+    if robot_view.moving:
+        robot_view.update()
+    elif COMMAND_TYPE == 'KEYBOARD':
         if keys[key.UP]:
             robot.move(Robot.Action.FORWARD)
         elif keys[key.DOWN]:
