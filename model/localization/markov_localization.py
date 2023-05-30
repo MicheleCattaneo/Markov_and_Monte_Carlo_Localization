@@ -63,6 +63,9 @@ class MarkovLocalization(LocalizationBase):
         self.belief = self.measurement_probability(measurement) * self.belief
 
         self.belief = self.belief / self.belief.sum()
+        # make sure no probs go to zero bc of machine imprecision
+        self.belief += np.ones_like(self.belief) * 2e-16
+        self.belief[~self.world.walkable] = 0
 
     def act(self, action: RobotBase.Action) -> None:
         try:

@@ -11,7 +11,6 @@ class UncertainMarkovLocalization(MarkovLocalization):
         p(i|l) ~ Norm(true_i, sigma)
     """    
 
-
     def measurement_probability(self, measurement: float) -> np.ndarray:
         # create nd-array of gaussians, centered at the true measurement.
         # Sample the measurement from the PDFs
