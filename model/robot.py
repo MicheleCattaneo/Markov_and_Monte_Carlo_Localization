@@ -58,15 +58,21 @@ class Robot(RobotBase):
                 else (self.orientation.value + 4) % len(self.Direction)
 
 
+            new_pos_deterministic = self.position + Robot.directions[move_dir]
             new_pos = self.position + uncertainty_multiplier * Robot.directions[move_dir]
 
             # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
             if not self.world.walkable[tuple(new_pos.astype(int))]:
                 return
+            # bumper sensor; even the uncertainty tells you not to move,
+            # if you are in front of an obstacle, dont execute any action.
+            if not self.world.walkable[tuple(new_pos_deterministic.astype(int))]:
+                return
             self.set_position(new_pos)
 
         reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
 
+        
         self.localization.act(action)
         self.localization.see(reading)
 
