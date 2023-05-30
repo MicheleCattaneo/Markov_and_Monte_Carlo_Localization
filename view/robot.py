@@ -23,15 +23,32 @@ class RobotView(Observer):
 
         self.display_position = self.robot.position.copy().astype(float)
         self.moving = False
+        self.allow_move = True
         self.dt = SPEED / FPS
         self.dt = min(self.dt, 1.)
 
         self.robot.on_move.subscribe(self)
         self.update()
 
+
+    def update_moving(self):
+        if self.moving:
+            self.allow_move = False
+        elif self.allow_move:
+            self.moving = True
+        else:
+            self.allow_move = True
+
     def update(self) -> None:
         if self.moving:
-            self.display_position += self.dt * (self.robot.position - self.display_position)
+            remaining_distance = np.linalg.norm(self.robot.position - self.display_position)
+            movement = self.dt * self.robot.directions[self.robot.orientation.value]
+            if np.linalg.norm(movement) > remaining_distance:
+                self.display_position = self.robot.position
+                self.moving = False
+            else:
+                self.display_position += movement
+
             if np.allclose(self.display_position, self.robot.position, atol=0.01):
                 self.display_position = self.robot.position
                 self.moving = False
@@ -41,6 +58,7 @@ class RobotView(Observer):
 
         x, y = self.display_position * TILE_SIZE + TILE_SIZE // 2
         self.draw_robot(x, y, self.robot.orientation)
+
 
     def draw_robot(self, x: float, y: float, direction: RobotBase.Direction) -> None:
         if self.sprite is not None:

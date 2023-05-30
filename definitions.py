@@ -2,12 +2,13 @@ from model.definition import Definition
 from environments import custom, base_with_obstacle
 
 COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
+SIM_TYPE = 'CONTINUOUS' # DISCREET, CONTINUOUS
 FPS = 15
-SPEED = 10 # tiles per second
+SPEED = 10.0 # tiles per second
 
 # Environment
 SCALE = 1  # must be int
-ENVIRONMENT = "custom"
+ENVIRONMENT = "continuous"
 defs = {
     "custom": Definition(
         width=30,
@@ -28,6 +29,14 @@ defs = {
         width=20,
         height=20,
         robot_start=(4, 4),
+        sensor_sig=.7,
+        objects=base_with_obstacle,
+        generate_plots=False
+    ),
+    "continuous": Definition(
+        width=50,
+        height=30,
+        robot_start=(10, 20),
         sensor_sig=.7,
         objects=base_with_obstacle,
         generate_plots=False
