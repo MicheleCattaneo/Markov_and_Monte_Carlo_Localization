@@ -1,7 +1,11 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from definitions import ROBOT_SIZE
 if TYPE_CHECKING:
     from base.localization import LocalizationBase
+    from base.sensor import SensorBase
+
 
 import abc
 from enum import Enum
@@ -43,6 +47,8 @@ class RobotBase(abc.ABC):
 
     localization: LocalizationBase
 
+    sensor: SensorBase
+
     on_move: Subject = Subject()
 
     @abc.abstractmethod
@@ -55,7 +61,13 @@ class RobotBase(abc.ABC):
         return x, y, self.orientation.value
 
     def set_position(self, x: Union[float, np.ndarray], y: Optional[float] = None) -> None:
+        """Sets the new position of the robot. Notifies the on_move subscription and
+        makes the sensor sense, to get the new sensor intersection.
+        """        
+
         if isinstance(x, np.ndarray):
             self.position = x
         else:
-            self.position = np.array([x, y])
+            self.position = np.array([x, y], dtype='float32')
+        self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
+        self.on_move.notify()

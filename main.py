@@ -5,6 +5,7 @@ import pyglet
 from pyglet import app
 from pyglet.window import Window
 from pyglet.window import key
+from pyglet.window import mouse
 
 import os
 
@@ -35,6 +36,7 @@ def update(dt: float) -> None:
         r = np.random.random()
 
         robot.move(Robot.Action(int(r * 4)))
+
 
 
 if __name__ == '__main__':
@@ -73,6 +75,11 @@ if __name__ == '__main__':
     # endregion
 
     # region Pyglet Run
+
+    @window.event
+    def on_mouse_press(x, y, button, modifiers):
+        if button == 1:
+            robot.teleport(x,y)
 
     @window.event
     def on_draw():

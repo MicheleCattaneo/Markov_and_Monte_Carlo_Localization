@@ -29,8 +29,8 @@ class Robot(RobotBase):
             sensor (SensorBase): the sensor type
             localization (LocalizationBase): the localization type
         """        
-        self.set_position(x, y)
         self.sensor = sensor
+        self.set_position(x, y)
 
         self.world = world
         self.localization = localization
@@ -71,3 +71,14 @@ class Robot(RobotBase):
         self.localization.see(reading)
 
         self.on_move.notify()
+
+
+    def teleport(self, x: float, y: float)->None:
+        """Teleports the robot to a new position.
+        Calls robot.set_position()
+
+        Args:
+            x (float): x pixel coordinates 
+            y (float): y pixel coordinates
+        """        
+        self.set_position(x // TILE_SIZE, y // TILE_SIZE)
