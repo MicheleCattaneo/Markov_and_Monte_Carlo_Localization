@@ -6,11 +6,12 @@ SIM_TYPE = 'CONTINUOUS' # DISCREET, CONTINUOUS
 FPS = 15
 SPEED = 10.0 # tiles per second
 PARTICLE_SIZE = 10.0
-NUM_PARTICLES = 1000
+NUM_PARTICLES = 100
+PARTICLE_NOISE = 1.0
 
 # Environment
 SCALE = 1  # must be int
-ENVIRONMENT = "base"
+ENVIRONMENT = "custom"
 defs = {
     "custom": Definition(
         width=30,

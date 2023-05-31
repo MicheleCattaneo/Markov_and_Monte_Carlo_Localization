@@ -108,12 +108,10 @@ class ContinuousRobot(RobotBase):
                 else (self.orientation.value + 4) % len(self.Direction)
 
             speed_mult = SPEED / FPS
-            new_pos = self.position + uncertainty_multiplier * speed_mult * ContinuousRobot.directions[move_dir] / np.linalg.norm(ContinuousRobot.directions[move_dir])
+            new_pos = self.position + uncertainty_multiplier * speed_mult * ContinuousRobot.directions[move_dir] * TILE_SIZE / np.linalg.norm(ContinuousRobot.directions[move_dir] * TILE_SIZE)
 
             new_center = (new_pos + ROBOT_SIZE) * TILE_SIZE
             if not self.world.check_within_boundaries(new_center[0], new_center[1]) or self.world.is_occupied(new_center[0], new_center[1]):
-                #self.sensor.
-                #self.set_position(new_pos)
                 return
             self.set_position(new_pos)
 
@@ -121,6 +119,8 @@ class ContinuousRobot(RobotBase):
 
         self.localization.act(action)
         self.localization.see(reading)
+
+        self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)[0]
 
         self.on_move.notify()
 
