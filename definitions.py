@@ -5,10 +5,11 @@ COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 SIM_TYPE = 'CONTINUOUS' # DISCREET, CONTINUOUS
 FPS = 15
 SPEED = 10.0 # tiles per second
+PARTICLE_SIZE = 100.0
 
 # Environment
 SCALE = 1  # must be int
-ENVIRONMENT = "continuous"
+ENVIRONMENT = "base"
 defs = {
     "custom": Definition(
         width=30,

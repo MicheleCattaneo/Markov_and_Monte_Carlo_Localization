@@ -30,6 +30,9 @@ class LaserSensor(SensorBase):
 
         self.intersection: Optional[Tuple[float, float]] = None
 
+    def likelihood(self, true_measurements, measurement):
+        return np.isclose(true_measurements, measurement).astype('float')
+
     def sense(self, xy: np.ndarray, direction: RobotBase.Direction) -> np.ndarray:
         gx, gy = xy * TILE_SIZE
 

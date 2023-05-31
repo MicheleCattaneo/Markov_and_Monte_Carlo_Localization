@@ -10,5 +10,9 @@ class SensorBase(abc.ABC):
     def sense(self, xy: np.ndarray, direction: RobotBase.Direction) -> float:
         pass
 
+    @abc.abstractmethod
+    def likelihood(true_measurements, measurement) -> float:
+        pass
+
     def true_reading(self, xy: np.ndarray, direction: RobotBase.Direction) -> float:
         return self.sense(xy, direction)

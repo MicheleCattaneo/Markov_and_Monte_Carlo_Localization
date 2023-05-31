@@ -12,12 +12,13 @@ from model.robot import DiscreetRobot, ContinuousRobot
 from model.grid_world import GridWorld
 from model.continuous_world import ContinuousWorld
 from model.movement_model import DiscreteMovementModel, UncertainMovementModel
-from model.localization import MarkovLocalization, UncertainMarkovLocalization, MonteCarloLocalization
+from model.localization import MarkovLocalization, MonteCarloLocalization
 from model.sensors import LaserSensor, UncertainLaserSensor
 
 from view.robot import RobotView
 from view.laser import LaserSensorView
 from view.probs_grid import LocalizationBeliefView
+from view.probs_particle import ParticleView
 
 
 def update(dt: float) -> None:
@@ -64,14 +65,15 @@ if __name__ == '__main__':
     if SIM_TYPE == "DISCREET":
         world = GridWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
         sensor = UncertainLaserSensor(world, SENSOR_LENGTH)
-        localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8, 0.2, 0.0])))
+        localization = MarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8, 0.2, 0.0])))
         robot = DiscreetRobot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
         probabilities_view = LocalizationBeliefView(robot, world, env_batch)
     elif SIM_TYPE == "CONTINUOUS":
         world = ContinuousWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
-        sensor = LaserSensor(world, SENSOR_LENGTH)
+        sensor = UncertainLaserSensor(world, SENSOR_LENGTH)
         localization = MonteCarloLocalization(world, sensor)
         robot = ContinuousRobot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
+        probabilities_view = ParticleView(localization, robot, env_batch)
 
     robot_view = RobotView(robot, rob_batch)
     laser_view = LaserSensorView(robot, sensor, rob_batch)

@@ -1,5 +1,7 @@
 import numpy as np
 
+from scipy.stats import norm
+
 from definitions import MEASUREMENT_SIGMA
 from base.robot import RobotBase
 from model.sensors.LaserSensor import LaserSensor
@@ -16,3 +18,6 @@ class UncertainLaserSensor(LaserSensor):
 
     def true_reading(self, xy: np.ndarray, direction: RobotBase.Direction):
         return super().sense(xy, direction)
+
+    def likelihood(self, true_measurements, measurement):
+        return norm.pdf(measurement, true_measurements, MEASUREMENT_SIGMA)

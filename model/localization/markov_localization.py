@@ -57,7 +57,9 @@ class MarkovLocalization(LocalizationBase):
         Given a measurement, returns the probability
         of being at a position and measuring the given measurement.
         """
-        return np.isclose(self.true_measurements, measurement).astype('int')
+        #return np.isclose(self.true_measurements, measurement).astype('int')
+        likelihood = np.vectorize(self.sensor.likelihood)
+        return likelihood(self.true_measurements, measurement)
 
     def see(self, measurement: float) -> None:
         self.belief = self.measurement_probability(measurement) * self.belief

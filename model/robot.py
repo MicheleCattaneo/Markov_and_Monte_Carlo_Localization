@@ -117,7 +117,7 @@ class ContinuousRobot(RobotBase):
                 return
             self.set_position(new_pos)
 
-        reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
+        reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)[0]
 
         self.localization.act(action)
         self.localization.see(reading)
