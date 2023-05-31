@@ -1,5 +1,5 @@
 from model.definition import Definition
-from environments import custom, base_with_obstacle
+from environments import custom, base_with_obstacle, symmetric_rooms
 
 COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 FPS = 15
@@ -7,7 +7,7 @@ SPEED = 100  # tiles per second
 
 # Environment
 SCALE = 1  # must be int
-ENVIRONMENT = "custom"
+ENVIRONMENT = "symmetric_rooms"
 defs = {
     "custom": Definition(
         width=30,
@@ -31,6 +31,14 @@ defs = {
         sensor_sig=.7,
         objects=base_with_obstacle,
         generate_plots=False
+    ),
+    "symmetric_rooms": Definition(
+        width=51,
+        height=31,
+        generate_plots=False,
+        objects=symmetric_rooms,
+        robot_start=(9,9),
+        sensor_sig=2.5
     )
 }[ENVIRONMENT]
 
