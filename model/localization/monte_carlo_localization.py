@@ -61,9 +61,6 @@ class MonteCarloLocalization(LocalizationBase):
         print("-------------")
         for particle in self.particles:
             particle.weight /= total_weight
-            print(particle.weight)
-
-        print(np.sum([particle.weight for particle in self.particles]))
 
         # resample the particles based on their weights
         sampled_particles = np.random.choice(self.particles, size=len(self.particles), replace=True, p=[particle.weight for particle in self.particles])

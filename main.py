@@ -71,7 +71,7 @@ if __name__ == '__main__':
     elif SIM_TYPE == "CONTINUOUS":
         world = ContinuousWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
         sensor = UncertainLaserSensor(world, SENSOR_LENGTH)
-        localization = MonteCarloLocalization(world, sensor)
+        localization = MonteCarloLocalization(world, sensor, NUM_PARTICLES)
         robot = ContinuousRobot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
         probabilities_view = ParticleView(localization, robot, env_batch)
 
