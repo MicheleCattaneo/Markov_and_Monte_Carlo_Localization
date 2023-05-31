@@ -8,6 +8,7 @@ SPEED = 10.0 # tiles per second
 PARTICLE_SIZE = 10.0
 NUM_PARTICLES = 100
 PARTICLE_NOISE = 1.0
+JITTER_RATE = 0.1
 
 # Environment
 SCALE = 1  # must be int

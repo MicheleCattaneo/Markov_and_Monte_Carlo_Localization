@@ -35,7 +35,7 @@ class Particle:
 
             move_dir = self.orientation.value \
                 if action == action.FORWARD \
-                else (self.orientation.value + 4) % len(self.Direction)
+                else (self.orientation.value + 4) % len(RobotBase.Direction)
 
             speed_mult = SPEED / FPS
             new_pos = np.array([self.x, self.y]) + uncertainty_multiplier * speed_mult * MonteCarloLocalization.directions[move_dir] * TILE_SIZE / np.linalg.norm(MonteCarloLocalization.directions[move_dir])
@@ -108,6 +108,14 @@ class MonteCarloLocalization(LocalizationBase):
         
             self.particles.append(Particle(new_x, new_y, new_orientation, weight=1.0/NUM_PARTICLES))
 
+        # introduce jittering in the case of perception aliasing
+        num_jitter_particles = int(JITTER_RATE * NUM_PARTICLES)
+        for _ in range(num_jitter_particles):
+            x = np.random.uniform(0, self.world.width)
+            y = np.random.uniform(0, self.world.height)
+            orientation = RobotBase.Direction(np.random.choice(range(0,8)))
+            self.particles.append(Particle(x, y, orientation, weight=1.0/NUM_PARTICLES))
+
 
     def act(self, action: RobotBase.Action) -> None:
         for particle in self.particles:
@@ -126,5 +134,9 @@ class MonteCarloLocalization(LocalizationBase):
         for particle in self.particles:
             particle.weight /= total_weight
 
-        # resample the particles based on their weights
-        self._resample()
+        # calculate the effective sample size
+        ess = 1.0 / np.sum(np.square([particle.weight for particle in self.particles]))
+
+        # resample the particles based on their weights only if ESS is below the threshold
+        if ess < len(self.particles) / 2:
+            self._resample()
