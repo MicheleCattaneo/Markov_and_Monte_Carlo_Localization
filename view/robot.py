@@ -42,7 +42,12 @@ class RobotView(Observer):
     def update(self) -> None:
         if self.moving:
             remaining_distance = np.linalg.norm(self.robot.position - self.display_position)
-            movement = self.dt * self.robot.directions[self.robot.orientation.value]
+        
+            if self.robot.current_action == RobotBase.Action.BACKWARD:
+                movement = -self.dt * self.robot.directions[self.robot.orientation.value]
+            else:
+                movement = self.dt * self.robot.directions[self.robot.orientation.value]
+
             if np.linalg.norm(movement) > remaining_distance:
                 self.display_position = self.robot.position
                 self.moving = False
