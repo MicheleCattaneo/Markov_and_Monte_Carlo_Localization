@@ -19,12 +19,13 @@ class DisplayableRectangle(shapes.Rectangle, DisplayableShape):
 
 
 class DisplayableObstacle(DisplayableRectangle):
-    def __init__(self, x, y, width, height, color=..., batch=None, group=None):
+    def __init__(self, x, y, width, height, color=..., textured=True, batch=None, group=None):
         super().__init__(x, y, width, height, color, batch, group)
 
         self.sprite = None
         self.batch = batch
-        self.load_texture()
+        if textured:
+            self.load_texture()
 
     def load_texture(self):
         original_texture = image.load('./textures/brick_wall.jpg').get_texture()
