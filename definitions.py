@@ -2,9 +2,10 @@ from model.definition import Definition
 from environments import custom, base_with_obstacle
 
 COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
-SIM_TYPE = 'CONTINUOUS' # DISCREET, CONTINUOUS
 FPS = 15
-SPEED = 10.0 # tiles per second
+SPEED = 10.0  # tiles per second
+
+SIM_TYPE = 'CONTINUOUS'  # DISCREET, CONTINUOUS
 PARTICLE_SIZE = 10.0
 NUM_PARTICLES = 100
 PARTICLE_NOISE = 1.0
@@ -37,7 +38,7 @@ defs = {
         objects=base_with_obstacle,
         generate_plots=False
     ),
-    "continuous": Definition(
+    "sparse_room": Definition(
         width=50,
         height=30,
         robot_start=(10, 20),

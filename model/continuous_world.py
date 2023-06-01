@@ -2,7 +2,7 @@ from shapely.geometry import Point as ShapelyPoint
 from typing import List, Tuple
 import numpy as np
 from base.shapes import DisplayableRectangle
-from definitions import defs
+from definitions import defs, TILE_SIZE, ROBOT_SIZE
 
 
 class ContinuousWorld:
