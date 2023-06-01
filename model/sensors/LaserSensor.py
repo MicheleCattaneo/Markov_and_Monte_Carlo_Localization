@@ -33,7 +33,7 @@ class LaserSensor(SensorBase):
     def likelihood(self, true_measurements, measurement):
         return np.isclose(true_measurements, measurement).astype('float')
 
-    def sense(self, xy: np.ndarray, direction: RobotBase.Direction) -> np.ndarray:
+    def sense(self, xy: np.ndarray, direction: RobotBase.Direction) -> float:
         gx, gy = xy * TILE_SIZE
 
         mass_center = shapely.Point((gx, gy))
@@ -41,35 +41,38 @@ class LaserSensor(SensorBase):
 
         closest_dist = np.inf
         closest_obj = None
-
-        for object in self.world.objects:
-            if object.shapely_shape.geom_type == "LineString":
-                intersection = object.shapely_shape.intersection(laser_beam_obj)
-            else:
-                intersection = object.shapely_shape.exterior.intersection(laser_beam_obj)
-            if not intersection.is_empty:
-                if intersection.geom_type == "LineString":
-                    intersection = intersection.boundary
-                if intersection.geom_type == 'Point':
-                    # if intersection is a point, use envelope
-                    d = intersection.envelope.distance(mass_center)
-                    if d < closest_dist:
-                        closest_dist = d
-                        closest_obj = intersection.envelope
+        try:
+            for object in self.world.objects:
+                if object.shapely_shape.geom_type == "LineString":
+                    intersection = object.shapely_shape.intersection(laser_beam_obj)
                 else:
-                    # if intersection is a multipoint, iterate through the points
-                    for point in intersection.geoms:
-                        d = point.distance(mass_center)
+                    intersection = object.shapely_shape.exterior.intersection(laser_beam_obj)
+                if not intersection.is_empty:
+                    if intersection.geom_type == "LineString":
+                        intersection = intersection.boundary
+                    if intersection.geom_type == 'Point':
+                        # if intersection is a point, use envelope
+                        d = intersection.envelope.distance(mass_center)
                         if d < closest_dist:
                             closest_dist = d
-                            closest_obj = point
+                            closest_obj = intersection.envelope
+                    else:
+                        # if intersection is a multipoint, iterate through the points
+                        for point in intersection.geoms:
+                            d = point.distance(mass_center)
+                            if d < closest_dist:
+                                closest_dist = d
+                                closest_obj = point
 
-        self.intersection = (closest_obj.x, closest_obj.y) if closest_obj is not None else None
+            self.intersection = (closest_obj.x, closest_obj.y) if closest_obj is not None else None
 
-        # default measurement can not be 'inf' because it creates issues when modelling
-        # measurement probabilities with an infinite mean:
-        # E.g: if p(i|l) ~ Norm(inf, 1), when sampling 'inf' from the pdf generates NaNs.
-        return closest_dist if closest_dist != float('inf') else -1
+            # default measurement can not be 'inf' because it creates issues when modelling
+            # measurement probabilities with an infinite mean:
+            # E.g: if p(i|l) ~ Norm(inf, 1), when sampling 'inf' from the pdf generates NaNs.
+            return closest_dist if closest_dist != float('inf') else -1
+        except Exception as e:
+            print("Error in the particle sensing:", e)
+            return -1
     
     def create_laser_beam_object(self, x, y, direction: RobotBase.Direction):
         line = ShapelyLine(

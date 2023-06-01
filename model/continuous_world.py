@@ -18,12 +18,11 @@ class ContinuousWorld:
         self.objects += self._get_walls(width, height, (255, 255, 255), batch)
         
     def _get_walls(self, width: int, height: int, color: Tuple[int, int, int], batch) -> List[DisplayableRectangle]:
-        thickness = 10  # Define your wall thickness here
         return [
-            DisplayableRectangle(0, 0, width, thickness, color=color, batch=batch),
-            DisplayableRectangle(0, 0, thickness, height, color=color, batch=batch),
-            DisplayableRectangle(width - thickness, 0, thickness, height, color=color, batch=batch),
-            DisplayableRectangle(0, height - thickness, width, thickness, color=color, batch=batch)
+            DisplayableRectangle(0, 0, width, TILE_SIZE, color=color, batch=batch),
+            DisplayableRectangle(0, 0, TILE_SIZE, height, color=color, batch=batch),
+            DisplayableRectangle(width - TILE_SIZE, 0, TILE_SIZE, height, color=color, batch=batch),
+            DisplayableRectangle(0, height - TILE_SIZE, width, TILE_SIZE, color=color, batch=batch)
         ]
 
     def is_occupied(self, x: float, y: float) -> bool:

@@ -29,8 +29,8 @@ class DiscreetRobot(RobotBase):
             sensor (SensorBase): the sensor type
             localization (LocalizationBase): the localization type
         """        
-        self.set_position(x, y)
         self.sensor = sensor
+        self.set_position(x, y)
 
         self.world = world
         self.localization = localization
@@ -58,19 +58,36 @@ class DiscreetRobot(RobotBase):
                 else (self.orientation.value + 4) % len(self.Direction)
 
 
+            new_pos_deterministic = self.position + DiscreetRobot.directions[move_dir]
             new_pos = self.position + uncertainty_multiplier * DiscreetRobot.directions[move_dir]
 
             # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
             if not self.world.walkable[tuple(new_pos.astype(int))]:
                 return
+            # bumper sensor; even the uncertainty tells you not to move,
+            # if you are in front of an obstacle, dont execute any action.
+            if not self.world.walkable[tuple(new_pos_deterministic.astype(int))]:
+                return
             self.set_position(new_pos)
 
         reading = self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
 
+        
         self.localization.act(action)
         self.localization.see(reading)
 
         self.on_move.notify()
+
+    def teleport(self, x: float, y: float) -> None:
+        """Teleports the robot to a new position.
+        Calls robot.set_position()
+
+        Args:
+            x (float): x pixel coordinates
+            y (float): y pixel coordinates
+        """
+        self.set_position(x // TILE_SIZE, y // TILE_SIZE)
+
 
 class ContinuousRobot(RobotBase):
     directions = [
@@ -85,8 +102,8 @@ class ContinuousRobot(RobotBase):
     ]
 
     def __init__(self, world, x, y, sensor: SensorBase, localization: LocalizationBase) -> None:
-        self.set_position(x, y)
         self.sensor = sensor
+        self.set_position(x, y)
 
         self.world = world
         self.localization = localization
@@ -125,4 +142,3 @@ class ContinuousRobot(RobotBase):
         self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)[0]
 
         self.on_move.notify()
-
