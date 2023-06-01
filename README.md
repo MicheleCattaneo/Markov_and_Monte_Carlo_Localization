@@ -32,6 +32,10 @@ Simply execute the main file with python and control the robot with the allow ke
 $ python main.py
 ```
 
+#### Controls:
+Go forwards and backwards with the ARROW_UP and ARROW_DOWN keys. Rotate left and right with the ARROW_LEFT and ARROW_RIGHT keys. 
+The robot can be "kidnapped" (picked up) and relocated in any area of the environment by a left-click on the desired location. 
+
 #### Run with custom settings:
 The file `./definitions.py` defines global variables and objects that will be used in the simulation. You can control the following variables:
 
