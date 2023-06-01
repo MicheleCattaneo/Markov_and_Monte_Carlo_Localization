@@ -2,6 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from definitions import ROBOT_SIZE, TILE_SIZE
+from model.continuous_world import ContinuousWorld
+from model.grid_world import GridWorld
 
 if TYPE_CHECKING:
     from base.localization import LocalizationBase
@@ -90,6 +92,16 @@ class RobotBase(abc.ABC):
             x (float): x pixel coordinates
             y (float): y pixel coordinates
         """
+        if isinstance(self.localization.world, ContinuousWorld):
+            if self.localization.world.is_occupied(x, y):
+                print('occupied')
+                return
+        if isinstance(self.localization.world, GridWorld):
+            new_coords = x // TILE_SIZE, y // TILE_SIZE
+            if not self.localization.world.walkable[*new_coords]:
+                print('occupied')
+                return 
+              
         self.set_position(x // TILE_SIZE, y // TILE_SIZE)
         self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
         self.on_move.notify()

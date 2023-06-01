@@ -5,7 +5,7 @@ COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 FPS = 15
 SPEED = 8.2  # tiles per second
 
-SIM_TYPE = 'DISCRETE'  # DISCREET, CONTINUOUS
+SIM_TYPE = 'CONTINUOUS'  # DISCRETE, CONTINUOUS
 PARTICLE_SIZE = 10.0
 NUM_PARTICLES = 100
 PARTICLE_NOISE = 1.0
@@ -21,7 +21,8 @@ defs = {
         robot_start=(20, 30),
         sensor_len=30 * 1.5,
         sensor_sig=5,
-        objects=custom
+        objects=custom,
+        generate_plots=False
     ),
     "base": Definition(
         width=20,
