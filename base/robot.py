@@ -81,5 +81,15 @@ class RobotBase(abc.ABC):
             self.position = x
         else:
             self.position = np.array([x, y], dtype='float32')
+
+    def teleport(self, x: float, y: float) -> None:
+        """Teleports the robot to a new position.
+        Calls robot.set_position()
+
+        Args:
+            x (float): x pixel coordinates
+            y (float): y pixel coordinates
+        """
+        self.set_position(x // TILE_SIZE, y // TILE_SIZE)
         self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
         self.on_move.notify()

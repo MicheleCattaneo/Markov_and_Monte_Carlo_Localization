@@ -4,10 +4,10 @@ from base.localization import LocalizationBase
 from base.robot import RobotBase
 from base.sensor import SensorBase
 from definitions import ROBOT_SIZE, TILE_SIZE
-from model.movement_model import DiscreteMovementModel
+from model.movement_model import MovementModel
 
 
-class DiscreetRobot(RobotBase):
+class DiscreteRobot(RobotBase):
 
     def __init__(self, world, x, y, sensor: SensorBase, localization: LocalizationBase) -> None:
         """Initializes a robot at the given coordinates with a specific sensor type and markov localization method.
@@ -39,7 +39,7 @@ class DiscreetRobot(RobotBase):
 
             uncertainty_multiplier = 1.
             # unless the robot uses a deterministic movement model, change the multiplier
-            if not isinstance(self.movement_model, DiscreteMovementModel):
+            if not isinstance(self.movement_model, MovementModel):
                 # a multiplier of 1 keeps the same direction, 0 annihilates the action
                 # and -1 reverses the action.
                 uncertainty_multiplier = np.random.choice([1., 0., -1.], p=self.movement_model.probs)
@@ -48,8 +48,8 @@ class DiscreetRobot(RobotBase):
                 if action == action.FORWARD \
                 else (self.orientation.value + 4) % len(self.Direction)
 
-            new_pos_deterministic = self.position + DiscreetRobot.directions[move_dir]
-            new_pos = self.position + uncertainty_multiplier * DiscreetRobot.directions[move_dir]
+            new_pos_deterministic = self.position + DiscreteRobot.directions[move_dir]
+            new_pos = self.position + uncertainty_multiplier * DiscreteRobot.directions[move_dir]
 
             # get i,j coordinates and check whether that tile is occupied by an object (obstacle)
             if not self.world.walkable[tuple(new_pos.astype(int))]:
@@ -66,13 +66,3 @@ class DiscreetRobot(RobotBase):
         self.localization.see(reading)
 
         self.on_move.notify()
-
-    def teleport(self, x: float, y: float) -> None:
-        """Teleports the robot to a new position.
-        Calls robot.set_position()
-
-        Args:
-            x (float): x pixel coordinates
-            y (float): y pixel coordinates
-        """
-        self.set_position(x // TILE_SIZE, y // TILE_SIZE)

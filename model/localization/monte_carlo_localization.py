@@ -45,17 +45,15 @@ class MonteCarloLocalization(LocalizationBase):
         self.particles = self.initialize_particles(num_particles)
 
     def initialize_particles(self, num_particles: int):
-        particles = []
-        for _ in range(num_particles):
-            while True:
-                x = np.random.uniform(0, self.world.width)
-                y = np.random.uniform(0, self.world.height)
-                if not self.world.is_occupied(x, y):
-                    orientation = RobotBase.Direction(np.random.choice(range(0, 8)))
-                    particles.append(Particle(x, y, orientation))
-                    break
+        return [self.get_particle() for _ in range(num_particles)]
 
-        return particles
+    def get_particle(self) -> Particle:
+        while True:
+            x = np.random.uniform(0, self.world.width)
+            y = np.random.uniform(0, self.world.height)
+            if not self.world.is_occupied(x, y):
+                orientation = RobotBase.Direction(np.random.choice(range(0, 8)))
+                return Particle(x, y, orientation)
 
     def _resample(self):
         # create new particles with the states of sampled particles, but reset weights
@@ -80,13 +78,12 @@ class MonteCarloLocalization(LocalizationBase):
 
             self.particles.append(Particle(new_x, new_y, new_orientation, weight=1.0 / NUM_PARTICLES))
 
-        # introduce jittexring in the case of perception aliasing
+        # introduce jittering in the case of perception aliasing
         num_jitter_particles = int(JITTER_RATE * NUM_PARTICLES)
         for _ in range(num_jitter_particles):
-            x = np.random.uniform(0, self.world.width)
-            y = np.random.uniform(0, self.world.height)
-            orientation = RobotBase.Direction(np.random.choice(range(0, 8)))
-            self.particles.append(Particle(x, y, orientation, weight=1.0 / NUM_PARTICLES))
+            particle = self.get_particle()
+            particle.weight = 1. / NUM_PARTICLES
+            self.particles.append(particle)
 
     def act(self, action: RobotBase.Action) -> None:
         for particle in self.particles:

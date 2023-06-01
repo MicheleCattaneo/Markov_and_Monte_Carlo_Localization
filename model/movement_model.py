@@ -3,7 +3,9 @@ import numpy as np
 from base.movement_models import MovementModelBase
 
 
-class DiscreteMovementModel(MovementModelBase):
+class MovementModel(MovementModelBase):
+    def __init__(self, _):
+        pass
 
     def _get_convolution_forward(self):
         filter = np.zeros((3, 3, 8))
