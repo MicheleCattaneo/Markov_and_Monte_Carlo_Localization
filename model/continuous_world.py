@@ -1,8 +1,10 @@
-from shapely.geometry import Point as ShapelyPoint
 from typing import List, Tuple
+
 import numpy as np
+from shapely.geometry import Point as ShapelyPoint
+
 from base.shapes import DisplayableRectangle
-from definitions import defs, TILE_SIZE, ROBOT_SIZE
+from definitions import defs, TILE_SIZE
 
 
 class ContinuousWorld:
@@ -16,7 +18,7 @@ class ContinuousWorld:
             self.objects.append(obj(*points, **kwargs, batch=batch))
 
         self.objects += self._get_walls(width, height, (255, 255, 255), batch)
-        
+
     def _get_walls(self, width: int, height: int, color: Tuple[int, int, int], batch) -> List[DisplayableRectangle]:
         return [
             DisplayableRectangle(0, 0, width, TILE_SIZE, color=color, batch=batch),
@@ -27,13 +29,12 @@ class ContinuousWorld:
 
     def is_occupied(self, x: float, y: float) -> bool:
         point = ShapelyPoint(x, y)
-        
+
         for obj in self.objects:
             if obj.shapely_shape.contains(point):
                 return True
-                
+
         return False
 
     def check_within_boundaries(self, x: float, y: float) -> bool:
         return 0 <= x <= self.width and 0 <= y <= self.height
-

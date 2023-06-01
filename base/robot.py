@@ -18,6 +18,17 @@ from base.observer_pattern import Subject
 
 
 class RobotBase(abc.ABC):
+    directions = [
+        np.array([0, 1]),
+        np.array([1, 1]),
+        np.array([1, 0]),
+        np.array([1, -1]),
+        np.array([0, -1]),
+        np.array([-1, -1]),
+        np.array([-1, 0]),
+        np.array([-1, 1])
+    ]
+
     class Direction(Enum):
         """
         Mapping between a direction and an index
@@ -53,7 +64,7 @@ class RobotBase(abc.ABC):
     on_move: Subject = Subject()
 
     @abc.abstractmethod
-    def move(self, action: Action):
+    def move(self, action: Action, dt: float):
         pass
 
     @property

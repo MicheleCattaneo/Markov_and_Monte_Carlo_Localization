@@ -66,4 +66,3 @@ class LaserSensorView(Observer):
             ix, iy, outer_radius=TILE_SIZE / 2, inner_radius=TILE_SIZE / 10,
             num_spikes=10, color=self.intersection_color, batch=self.batch
         )
-
