@@ -6,16 +6,8 @@ if TYPE_CHECKING:
 
 import abc
 
-import numpy as np
-
 
 class LocalizationBase(abc.ABC):
-    belief: np.ndarray
-
-    @abc.abstractmethod
-    def measurement_probability(self, measurement: float) -> np.ndarray:
-        pass
-
     @abc.abstractmethod
     def see(self, measurement: float) -> None:
         pass

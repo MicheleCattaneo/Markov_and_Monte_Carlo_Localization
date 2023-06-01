@@ -1,8 +1,8 @@
-from PIL import Image
-from matplotlib import pyplot as plt
-import seaborn as sns
 import numpy as np
 import pyglet.graphics
+import seaborn as sns
+from PIL import Image
+from matplotlib import pyplot as plt
 from scipy.ndimage import rotate
 
 from base.observer_pattern import Observer
@@ -49,8 +49,8 @@ class LocalizationBeliefView(Observer):
         for i in range(self.world.width):
             for j in range(self.world.height):
                 if self.tiles[i, j]:
-                    new_opacity = robot_probs_sum[i, j]**0.1
-                    self.tiles[i, j].opacity = int(new_opacity*255)
+                    new_opacity = robot_probs_sum[i, j] ** 0.1
+                    self.tiles[i, j].opacity = int(new_opacity * 255)
 
     def plot_8_orientations(self):
         plt.close()
@@ -66,7 +66,7 @@ class LocalizationBeliefView(Observer):
             for j in range(3):
                 if i == 1 and j == 1:
                     img = np.asarray(Image.open("textures/walle.png"))
-                    img = rotate(img, -45 - 45*self.robot.orientation.value, reshape=False)
+                    img = rotate(img, -45 - 45 * self.robot.orientation.value, reshape=False)
                     ax[i, j].imshow(img)
                     ax[i, j].axis("off")
                     continue

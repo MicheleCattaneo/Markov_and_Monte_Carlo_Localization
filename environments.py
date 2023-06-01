@@ -1,7 +1,6 @@
-from base.shapes import DisplayableRectangle, DisplayableObstacle, DisplayableCircle, DisplayablePolygon
+from base.shapes import DisplayableObstacle, DisplayableCircle, DisplayablePolygon
 
-
-color = (151,151,151)
+color = (151, 151, 151)
 
 custom = [
     (
@@ -68,7 +67,7 @@ symmetric_rooms = [
                        [3, 7],
                        [2, 5],
                        [3, 4]],
-            "color": (255,51,51)
+            "color": (255, 51, 51)
         }
     ),
     (
@@ -79,7 +78,7 @@ symmetric_rooms = [
                        [3, 27],
                        [2, 25],
                        [3, 24]],
-            "color": (255,255,0)
+            "color": (255, 255, 0)
         }
     ),
     (
@@ -90,7 +89,7 @@ symmetric_rooms = [
                        [47, 7],
                        [46, 5],
                        [47, 4]],
-            "color": (128,255,0)
+            "color": (128, 255, 0)
         }
     ),
     (
@@ -101,7 +100,7 @@ symmetric_rooms = [
                        [47, 27],
                        [46, 25],
                        [47, 24]],
-            "color": (0,128,255)
+            "color": (0, 128, 255)
         }
     ),
 ]

@@ -11,7 +11,7 @@ class SensorBase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def likelihood(true_measurements, measurement) -> float:
+    def likelihood(self, true_measurements, measurement) -> float:
         pass
 
     def true_reading(self, xy: np.ndarray, direction: RobotBase.Direction) -> float:

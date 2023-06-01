@@ -1,5 +1,6 @@
-from base.movement_models import MovementModelBase
 import numpy as np
+
+from base.movement_models import MovementModelBase
 
 
 class DiscreteMovementModel(MovementModelBase):
@@ -31,7 +32,7 @@ class DiscreteMovementModel(MovementModelBase):
         filter[2, 2, (7 + o) % 8] = 1
 
         return filter
-    
+
 
 class UncertainMovementModel(MovementModelBase):
     """Represents an uncertain movement model modelled by probabilities [p1,p2,p3]
@@ -39,8 +40,8 @@ class UncertainMovementModel(MovementModelBase):
     p2 is the probability of not executing any command
     and p3 is the probability of issuing the opposite command.
     The sum p1 + p2 + p3 must be equal to 1.
-    """    
-    
+    """
+
     def __init__(self, probs: np.ndarray = None) -> None:
         """Initializes an uncertain movement model.
 
@@ -48,7 +49,7 @@ class UncertainMovementModel(MovementModelBase):
             probs (np.ndarray, optional): a 3-d array containing the probabilities p1,p2 and p3 of executing the issued
             command, the probability of executing no command and the probability of executing the opposite command.
             When not defined, default values of [.8,.1,.1] are used.
-        """        
+        """
         if probs is not None:
             self.probs = probs
         else:

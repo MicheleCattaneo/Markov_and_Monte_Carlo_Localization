@@ -1,11 +1,11 @@
-from model.definition import Definition
 from environments import custom, base_with_obstacle, symmetric_rooms
+from model.definition import Definition
 
 COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 FPS = 15
-SPEED = 10.0  # tiles per second
+SPEED = 8.2  # tiles per second
 
-SIM_TYPE = 'DISCREET'  # DISCREET, CONTINUOUS
+SIM_TYPE = 'CONTINUOUS'  # DISCREET, CONTINUOUS
 PARTICLE_SIZE = 10.0
 NUM_PARTICLES = 100
 PARTICLE_NOISE = 1.0
@@ -19,7 +19,7 @@ defs = {
         width=30,
         height=40,
         robot_start=(20, 30),
-        sensor_len=30*1.5,
+        sensor_len=30 * 1.5,
         sensor_sig=5,
         objects=custom
     ),
@@ -28,7 +28,7 @@ defs = {
         height=20,
         robot_start=(10, 10),
         sensor_sig=.7,
-        generate_plots=True
+        generate_plots=False
     ),
     "base_with_obstacle": Definition(
         width=20,
@@ -51,11 +51,10 @@ defs = {
         height=31,
         generate_plots=False,
         objects=symmetric_rooms,
-        robot_start=(9,9),
+        robot_start=(9, 9),
         sensor_sig=2.5
     )
 }[ENVIRONMENT]
-
 
 RES_WIDTH = SCALE * defs.width * defs.tile_size
 RES_HEIGHT = SCALE * defs.height * defs.tile_size

@@ -5,19 +5,18 @@ import pyglet
 from pyglet import app
 from pyglet.window import Window
 from pyglet.window import key
-from pyglet.window import mouse
 
 import os
 
-from model.robot import DiscreetRobot, ContinuousRobot
+from model.robots import DiscreetRobot, ContinuousRobot
 from model.grid_world import GridWorld
 from model.continuous_world import ContinuousWorld
-from model.movement_model import DiscreteMovementModel, UncertainMovementModel
-from model.localization import MarkovLocalization, MonteCarloLocalization
-from model.sensors import LaserSensor, UncertainLaserSensor
+from model.movement_model import UncertainMovementModel
+from model.localization import MarkovLocalization, MonteCarloLocalization, UncertainMarkovLocalization
+from model.sensors import UncertainLaserSensor
 
 from view.robot import RobotView
-from view.laser import LaserSensorView
+from view.laser_sensor import LaserSensorView
 from view.probs_grid import LocalizationBeliefView
 from view.probs_particle import ParticleView
 
@@ -28,18 +27,17 @@ def update(dt: float) -> None:
     elif COMMAND_TYPE == 'KEYBOARD':
         robot_view.update()
         if keys[key.UP]:
-            robot.move(DiscreetRobot.Action.FORWARD)
+            robot.move(DiscreetRobot.Action.FORWARD, dt)
         elif keys[key.DOWN]:
-            robot.move(DiscreetRobot.Action.BACKWARD)
+            robot.move(DiscreetRobot.Action.BACKWARD, dt)
         elif keys[key.LEFT]:
-            robot.move(DiscreetRobot.Action.TURN_LEFT)
+            robot.move(DiscreetRobot.Action.TURN_LEFT, dt)
         elif keys[key.RIGHT]:
-            robot.move(DiscreetRobot.Action.TURN_RIGHT)
+            robot.move(DiscreetRobot.Action.TURN_RIGHT, dt)
     else:
         r = np.random.random()
 
-        robot.move(DiscreetRobot.Action(int(r * 4)))
-
+        robot.move(DiscreetRobot.Action(int(r * 4)), dt)
 
 
 if __name__ == '__main__':
@@ -67,9 +65,10 @@ if __name__ == '__main__':
     if SIM_TYPE == "DISCREET":
         world = GridWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
         sensor = UncertainLaserSensor(world, SENSOR_LENGTH)
-        localization = MarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8, 0.2, 0.0])))
+        localization = UncertainMarkovLocalization(world, sensor, UncertainMovementModel(np.array([0.8, 0.2, 0.0])))
         robot = DiscreetRobot(world, ROBOT_START_X, ROBOT_START_Y, sensor, localization)
         probabilities_view = LocalizationBeliefView(robot, world, env_batch)
+
     elif SIM_TYPE == "CONTINUOUS":
         world = ContinuousWorld(RES_WIDTH, RES_HEIGHT, TILE_SIZE, env_batch)
         sensor = UncertainLaserSensor(world, SENSOR_LENGTH)

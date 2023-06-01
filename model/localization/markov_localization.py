@@ -13,7 +13,7 @@ class MarkovLocalization(LocalizationBase):
     """ Represents the logic for Markov Localization assuming perfect measurements.
         The probability of a measurement i given a pose l is defined as follows:
             p(i|l) = 1 if i is eps-close to the true measurement and 0 otherwise.
-    """    
+    """
 
     def __init__(self, world: GridWorld, sensor: SensorBase, movement_model: MovementModelBase) -> None:
         self.world = world
@@ -23,19 +23,19 @@ class MarkovLocalization(LocalizationBase):
         self.true_measurements = self._precompute_measurements(world.width, world.height)
 
         self.belief = np.ones_like(self.true_measurements)
-        
+
         self.mask_out_belief_on_obstacles()
         self.normalize_belief()
-        
+
     def mask_out_belief_on_obstacles(self):
         """Annihilates likelihood that ended up in non walkbable regions due to
         convolutions. This function does not normalize the belief to sum up to 1.
-        """        
+        """
         self.belief[~self.world.walkable] = 0
 
     def normalize_belief(self):
         """Normalizes the belief to sum up to 1.
-        """        
+        """
         self.belief /= self.belief.sum()
 
     def _precompute_measurements(self, width: int, height: int):
@@ -57,7 +57,7 @@ class MarkovLocalization(LocalizationBase):
         Given a measurement, returns the probability
         of being at a position and measuring the given measurement.
         """
-        #return np.isclose(self.true_measurements, measurement).astype('int')
+        # return np.isclose(self.true_measurements, measurement).astype('int')
         likelihood = np.vectorize(self.sensor.likelihood)
         return likelihood(self.true_measurements, measurement)
 
@@ -82,6 +82,3 @@ class MarkovLocalization(LocalizationBase):
             pass
         direction = 1 if action == action.TURN_RIGHT else -1
         self.belief = np.roll(self.belief, shift=direction, axis=2)
-
-
-

@@ -9,7 +9,7 @@ class UncertainMarkovLocalization(MarkovLocalization):
     """Represents the logic of an uncertain Markov Localization.
         The probability of a measurement i given a pose l is defined as follows:
         p(i|l) ~ Norm(true_i, sigma)
-    """    
+    """
 
     def measurement_probability(self, measurement: float) -> np.ndarray:
         # create nd-array of gaussians, centered at the true measurement.
