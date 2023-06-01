@@ -26,7 +26,6 @@ class ParticleView(Observer):
 
         for particle in self.localization.particles:
             color = (0, 0, 255)
-            size = PARTICLE_SIZE
-            particle_shape = shapes.Circle(particle.x, particle.y, size, color=color, batch=self.batch)
+            particle_shape = shapes.Circle(particle.x, particle.y, PARTICLE_SIZE, color=color, batch=self.batch)
             particle_shape.opacity = int(particle.weight ** 0.1 * 255)
             self.particle_shapes.append(particle_shape)

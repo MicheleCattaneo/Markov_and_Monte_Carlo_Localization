@@ -5,7 +5,7 @@ COMMAND_TYPE = 'KEYBOARD'  # KEYBOARD, RANDOM
 FPS = 15
 SPEED = 8.2  # tiles per second
 
-SIM_TYPE = 'CONTINUOUS'  # DISCREET, CONTINUOUS
+SIM_TYPE = 'DISCREET'  # DISCREET, CONTINUOUS
 PARTICLE_SIZE = 10.0
 NUM_PARTICLES = 100
 PARTICLE_NOISE = 1.0
@@ -13,7 +13,7 @@ JITTER_RATE = 0.1
 
 # Environment
 SCALE = 1  # must be int
-ENVIRONMENT = "base"
+ENVIRONMENT = "custom"
 defs = {
     "custom": Definition(
         width=30,

@@ -32,7 +32,7 @@ class ContinuousRobot(RobotBase):
                 if action == action.FORWARD \
                 else (self.orientation.value + 4) % len(self.Direction)
 
-            speed_mult = SPEED * dt
+            speed_mult = SPEED / FPS
             new_pos = self.position + uncertainty_multiplier * speed_mult * ContinuousRobot.directions[
                 move_dir] * TILE_SIZE / np.linalg.norm(ContinuousRobot.directions[move_dir] * TILE_SIZE)
 
