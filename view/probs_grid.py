@@ -65,8 +65,8 @@ class LocalizationBeliefView(Observer):
         for i in range(3):
             for j in range(3):
                 if i == 1 and j == 1:
-                    img = np.asarray(Image.open("rob.png"))
-                    img = rotate(img, 90 - 45*self.robot.orientation.value, reshape=False)
+                    img = np.asarray(Image.open("textures/walle.png"))
+                    img = rotate(img, -45 - 45*self.robot.orientation.value, reshape=False)
                     ax[i, j].imshow(img)
                     ax[i, j].axis("off")
                     continue

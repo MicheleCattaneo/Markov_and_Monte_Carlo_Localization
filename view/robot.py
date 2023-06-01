@@ -64,7 +64,6 @@ class RobotView(Observer):
         x, y = self.display_position * TILE_SIZE + TILE_SIZE // 2
         self.draw_robot(x, y, self.robot.orientation)
 
-
     def draw_robot(self, x: float, y: float, direction: RobotBase.Direction) -> None:
         if self.sprite is not None:
             self.sprite.delete()

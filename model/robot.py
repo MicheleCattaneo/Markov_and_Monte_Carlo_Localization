@@ -40,6 +40,7 @@ class DiscreetRobot(RobotBase):
         self.sensor.sense(self.position + ROBOT_SIZE, self.orientation)
 
     def move(self, action: RobotBase.Action):
+        self.current_action = action
         if action == action.TURN_LEFT:
             self.orientation = self.Direction((self.orientation.value - 1) % len(self.Direction))
         elif action == action.TURN_RIGHT:
